@@ -42,7 +42,8 @@ export const GAMES: Game[] = [
     description: "Четири нива на трудност за истински майстори на числата.",
     category: "Логика",
     gradient: "from-sky-500/40 via-sky-500/10 to-transparent",
-    status: "coming_soon",
+    status: "live",
+    route: "/games/sudoku",
   },
   {
     slug: "memory",
@@ -50,7 +51,8 @@ export const GAMES: Game[] = [
     description: "Тествай паметта си като откриваш двойки еднакви карти.",
     category: "Памет",
     gradient: "from-pink-500/40 via-pink-500/10 to-transparent",
-    status: "coming_soon",
+    status: "live",
+    route: "/games/memory",
   },
   {
     slug: "hangman",
@@ -90,7 +92,8 @@ export const GAMES: Game[] = [
     description: "15-puzzle: подреди плъзгащите числа по ред.",
     category: "Логика",
     gradient: "from-rose-500/40 via-rose-500/10 to-transparent",
-    status: "coming_soon",
+    status: "live",
+    route: "/games/sliding-puzzle",
   },
 ];
 
