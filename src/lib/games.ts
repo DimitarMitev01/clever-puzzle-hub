@@ -92,7 +92,8 @@ export const GAMES: Game[] = [
     description: "15-puzzle: подреди плъзгащите числа по ред.",
     category: "Логика",
     gradient: "from-rose-500/40 via-rose-500/10 to-transparent",
-    status: "coming_soon",
+    status: "live",
+    route: "/games/sliding-puzzle",
   },
 ];
 
