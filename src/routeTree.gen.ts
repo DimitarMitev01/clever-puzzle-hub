@@ -18,6 +18,8 @@ import { Route as GamesSnakeRouteImport } from './routes/games/snake'
 import { Route as Games2048RouteImport } from './routes/games/2048'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
+import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
@@ -64,6 +66,16 @@ const LovableEmailQueueProcessRoute =
     path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
+  id: '/lovable/email/auth/webhook',
+  path: '/lovable/email/auth/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
+  id: '/lovable/email/auth/preview',
+  path: '/lovable/email/auth/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -73,6 +85,8 @@ export interface FileRoutesByFullPath {
   '/games/2048': typeof Games2048Route
   '/games/snake': typeof GamesSnakeRoute
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
@@ -83,6 +97,8 @@ export interface FileRoutesByTo {
   '/games/2048': typeof Games2048Route
   '/games/snake': typeof GamesSnakeRoute
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
@@ -95,6 +111,8 @@ export interface FileRoutesById {
   '/games/2048': typeof Games2048Route
   '/games/snake': typeof GamesSnakeRoute
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
@@ -107,6 +125,8 @@ export interface FileRouteTypes {
     | '/games/2048'
     | '/games/snake'
     | '/games/tic-tac-toe'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -117,6 +137,8 @@ export interface FileRouteTypes {
     | '/games/2048'
     | '/games/snake'
     | '/games/tic-tac-toe'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
   id:
     | '__root__'
@@ -128,6 +150,8 @@ export interface FileRouteTypes {
     | '/games/2048'
     | '/games/snake'
     | '/games/tic-tac-toe'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
@@ -139,6 +163,8 @@ export interface RootRouteChildren {
   Games2048Route: typeof Games2048Route
   GamesSnakeRoute: typeof GamesSnakeRoute
   GamesTicTacToeRoute: typeof GamesTicTacToeRoute
+  LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
+  LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
@@ -207,6 +233,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/auth/webhook': {
+      id: '/lovable/email/auth/webhook'
+      path: '/lovable/email/auth/webhook'
+      fullPath: '/lovable/email/auth/webhook'
+      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/preview': {
+      id: '/lovable/email/auth/preview'
+      path: '/lovable/email/auth/preview'
+      fullPath: '/lovable/email/auth/preview'
+      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -229,6 +269,8 @@ const rootRouteChildren: RootRouteChildren = {
   Games2048Route: Games2048Route,
   GamesSnakeRoute: GamesSnakeRoute,
   GamesTicTacToeRoute: GamesTicTacToeRoute,
+  LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
+  LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
