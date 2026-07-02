@@ -13,11 +13,14 @@ import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GamesWordleRouteImport } from './routes/games/wordle'
+import { Route as GamesWordSearchRouteImport } from './routes/games/word-search'
 import { Route as GamesTicTacToeRouteImport } from './routes/games/tic-tac-toe'
 import { Route as GamesSudokuRouteImport } from './routes/games/sudoku'
 import { Route as GamesSnakeRouteImport } from './routes/games/snake'
 import { Route as GamesSlidingPuzzleRouteImport } from './routes/games/sliding-puzzle'
 import { Route as GamesMemoryRouteImport } from './routes/games/memory'
+import { Route as GamesHangmanRouteImport } from './routes/games/hangman'
 import { Route as Games2048RouteImport } from './routes/games/2048'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -43,6 +46,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesWordleRoute = GamesWordleRouteImport.update({
+  id: '/games/wordle',
+  path: '/games/wordle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesWordSearchRoute = GamesWordSearchRouteImport.update({
+  id: '/games/word-search',
+  path: '/games/word-search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesTicTacToeRoute = GamesTicTacToeRouteImport.update({
   id: '/games/tic-tac-toe',
   path: '/games/tic-tac-toe',
@@ -66,6 +79,11 @@ const GamesSlidingPuzzleRoute = GamesSlidingPuzzleRouteImport.update({
 const GamesMemoryRoute = GamesMemoryRouteImport.update({
   id: '/games/memory',
   path: '/games/memory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesHangmanRoute = GamesHangmanRouteImport.update({
+  id: '/games/hangman',
+  path: '/games/hangman',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Games2048Route = Games2048RouteImport.update({
@@ -101,11 +119,14 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/games/2048': typeof Games2048Route
+  '/games/hangman': typeof GamesHangmanRoute
   '/games/memory': typeof GamesMemoryRoute
   '/games/sliding-puzzle': typeof GamesSlidingPuzzleRoute
   '/games/snake': typeof GamesSnakeRoute
   '/games/sudoku': typeof GamesSudokuRoute
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
+  '/games/word-search': typeof GamesWordSearchRoute
+  '/games/wordle': typeof GamesWordleRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -116,11 +137,14 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/games/2048': typeof Games2048Route
+  '/games/hangman': typeof GamesHangmanRoute
   '/games/memory': typeof GamesMemoryRoute
   '/games/sliding-puzzle': typeof GamesSlidingPuzzleRoute
   '/games/snake': typeof GamesSnakeRoute
   '/games/sudoku': typeof GamesSudokuRoute
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
+  '/games/word-search': typeof GamesWordSearchRoute
+  '/games/wordle': typeof GamesWordleRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -133,11 +157,14 @@ export interface FileRoutesById {
   '/leaderboard': typeof LeaderboardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/games/2048': typeof Games2048Route
+  '/games/hangman': typeof GamesHangmanRoute
   '/games/memory': typeof GamesMemoryRoute
   '/games/sliding-puzzle': typeof GamesSlidingPuzzleRoute
   '/games/snake': typeof GamesSnakeRoute
   '/games/sudoku': typeof GamesSudokuRoute
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
+  '/games/word-search': typeof GamesWordSearchRoute
+  '/games/wordle': typeof GamesWordleRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -150,11 +177,14 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/profile'
     | '/games/2048'
+    | '/games/hangman'
     | '/games/memory'
     | '/games/sliding-puzzle'
     | '/games/snake'
     | '/games/sudoku'
     | '/games/tic-tac-toe'
+    | '/games/word-search'
+    | '/games/wordle'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -165,11 +195,14 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/profile'
     | '/games/2048'
+    | '/games/hangman'
     | '/games/memory'
     | '/games/sliding-puzzle'
     | '/games/snake'
     | '/games/sudoku'
     | '/games/tic-tac-toe'
+    | '/games/word-search'
+    | '/games/wordle'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -181,11 +214,14 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/_authenticated/profile'
     | '/games/2048'
+    | '/games/hangman'
     | '/games/memory'
     | '/games/sliding-puzzle'
     | '/games/snake'
     | '/games/sudoku'
     | '/games/tic-tac-toe'
+    | '/games/word-search'
+    | '/games/wordle'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -197,11 +233,14 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   LeaderboardRoute: typeof LeaderboardRoute
   Games2048Route: typeof Games2048Route
+  GamesHangmanRoute: typeof GamesHangmanRoute
   GamesMemoryRoute: typeof GamesMemoryRoute
   GamesSlidingPuzzleRoute: typeof GamesSlidingPuzzleRoute
   GamesSnakeRoute: typeof GamesSnakeRoute
   GamesSudokuRoute: typeof GamesSudokuRoute
   GamesTicTacToeRoute: typeof GamesTicTacToeRoute
+  GamesWordSearchRoute: typeof GamesWordSearchRoute
+  GamesWordleRoute: typeof GamesWordleRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -237,6 +276,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/wordle': {
+      id: '/games/wordle'
+      path: '/games/wordle'
+      fullPath: '/games/wordle'
+      preLoaderRoute: typeof GamesWordleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/word-search': {
+      id: '/games/word-search'
+      path: '/games/word-search'
+      fullPath: '/games/word-search'
+      preLoaderRoute: typeof GamesWordSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/tic-tac-toe': {
       id: '/games/tic-tac-toe'
       path: '/games/tic-tac-toe'
@@ -270,6 +323,13 @@ declare module '@tanstack/react-router' {
       path: '/games/memory'
       fullPath: '/games/memory'
       preLoaderRoute: typeof GamesMemoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/hangman': {
+      id: '/games/hangman'
+      path: '/games/hangman'
+      fullPath: '/games/hangman'
+      preLoaderRoute: typeof GamesHangmanRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/games/2048': {
@@ -327,11 +387,14 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   LeaderboardRoute: LeaderboardRoute,
   Games2048Route: Games2048Route,
+  GamesHangmanRoute: GamesHangmanRoute,
   GamesMemoryRoute: GamesMemoryRoute,
   GamesSlidingPuzzleRoute: GamesSlidingPuzzleRoute,
   GamesSnakeRoute: GamesSnakeRoute,
   GamesSudokuRoute: GamesSudokuRoute,
   GamesTicTacToeRoute: GamesTicTacToeRoute,
+  GamesWordSearchRoute: GamesWordSearchRoute,
+  GamesWordleRoute: GamesWordleRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
