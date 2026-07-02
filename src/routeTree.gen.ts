@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as GamesTicTacToeRouteImport } from './routes/games/tic-tac-toe'
 import { Route as GamesSudokuRouteImport } from './routes/games/sudoku'
 import { Route as GamesSnakeRouteImport } from './routes/games/snake'
+import { Route as GamesSlidingPuzzleRouteImport } from './routes/games/sliding-puzzle'
 import { Route as GamesMemoryRouteImport } from './routes/games/memory'
 import { Route as Games2048RouteImport } from './routes/games/2048'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
@@ -57,6 +58,11 @@ const GamesSnakeRoute = GamesSnakeRouteImport.update({
   path: '/games/snake',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesSlidingPuzzleRoute = GamesSlidingPuzzleRouteImport.update({
+  id: '/games/sliding-puzzle',
+  path: '/games/sliding-puzzle',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesMemoryRoute = GamesMemoryRouteImport.update({
   id: '/games/memory',
   path: '/games/memory',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/games/2048': typeof Games2048Route
   '/games/memory': typeof GamesMemoryRoute
+  '/games/sliding-puzzle': typeof GamesSlidingPuzzleRoute
   '/games/snake': typeof GamesSnakeRoute
   '/games/sudoku': typeof GamesSudokuRoute
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/games/2048': typeof Games2048Route
   '/games/memory': typeof GamesMemoryRoute
+  '/games/sliding-puzzle': typeof GamesSlidingPuzzleRoute
   '/games/snake': typeof GamesSnakeRoute
   '/games/sudoku': typeof GamesSudokuRoute
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/games/2048': typeof Games2048Route
   '/games/memory': typeof GamesMemoryRoute
+  '/games/sliding-puzzle': typeof GamesSlidingPuzzleRoute
   '/games/snake': typeof GamesSnakeRoute
   '/games/sudoku': typeof GamesSudokuRoute
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/games/2048'
     | '/games/memory'
+    | '/games/sliding-puzzle'
     | '/games/snake'
     | '/games/sudoku'
     | '/games/tic-tac-toe'
@@ -156,6 +166,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/games/2048'
     | '/games/memory'
+    | '/games/sliding-puzzle'
     | '/games/snake'
     | '/games/sudoku'
     | '/games/tic-tac-toe'
@@ -171,6 +182,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/games/2048'
     | '/games/memory'
+    | '/games/sliding-puzzle'
     | '/games/snake'
     | '/games/sudoku'
     | '/games/tic-tac-toe'
@@ -186,6 +198,7 @@ export interface RootRouteChildren {
   LeaderboardRoute: typeof LeaderboardRoute
   Games2048Route: typeof Games2048Route
   GamesMemoryRoute: typeof GamesMemoryRoute
+  GamesSlidingPuzzleRoute: typeof GamesSlidingPuzzleRoute
   GamesSnakeRoute: typeof GamesSnakeRoute
   GamesSudokuRoute: typeof GamesSudokuRoute
   GamesTicTacToeRoute: typeof GamesTicTacToeRoute
@@ -243,6 +256,13 @@ declare module '@tanstack/react-router' {
       path: '/games/snake'
       fullPath: '/games/snake'
       preLoaderRoute: typeof GamesSnakeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/sliding-puzzle': {
+      id: '/games/sliding-puzzle'
+      path: '/games/sliding-puzzle'
+      fullPath: '/games/sliding-puzzle'
+      preLoaderRoute: typeof GamesSlidingPuzzleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/games/memory': {
@@ -308,6 +328,7 @@ const rootRouteChildren: RootRouteChildren = {
   LeaderboardRoute: LeaderboardRoute,
   Games2048Route: Games2048Route,
   GamesMemoryRoute: GamesMemoryRoute,
+  GamesSlidingPuzzleRoute: GamesSlidingPuzzleRoute,
   GamesSnakeRoute: GamesSnakeRoute,
   GamesSudokuRoute: GamesSudokuRoute,
   GamesTicTacToeRoute: GamesTicTacToeRoute,
