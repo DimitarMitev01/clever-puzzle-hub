@@ -87,7 +87,8 @@ export const GAMES: Game[] = [
     description: "Класическо подреждане на геометрични фигури.",
     category: "Аркада",
     gradient: "from-violet-500/40 via-violet-500/10 to-transparent",
-    status: "coming_soon",
+    status: "live",
+    route: "/games/tetris",
   },
   {
     slug: "sliding-puzzle",
