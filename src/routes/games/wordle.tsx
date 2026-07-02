@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GameShell } from "@/components/GameShell";
 import { saveScore } from "@/lib/save-score";
 import { useAuth } from "@/hooks/use-auth";
-import { WORDS_5, CYRILLIC_LETTERS } from "@/lib/bg-words";
+import { WORDS_5, WORDS_5_EN, CYRILLIC_LETTERS, LATIN_LETTERS } from "@/lib/bg-words";
 
 export const Route = createFileRoute("/games/wordle")({
   head: () => ({ meta: [{ title: "Познай думата — IDMgames" }] }),
@@ -14,6 +14,7 @@ const MAX_TRIES = 6;
 const WORD_LEN = 5;
 
 type LetterState = "correct" | "present" | "absent" | "empty";
+type Lang = "bg" | "en";
 
 function evaluate(guess: string, answer: string): LetterState[] {
   const res: LetterState[] = Array(WORD_LEN).fill("absent");
@@ -39,6 +40,11 @@ function evaluate(guess: string, answer: string): LetterState[] {
 
 function WordleGame() {
   const { user } = useAuth();
+  const [lang, setLang] = useState<Lang>("bg");
+  const dict = useMemo(() => (lang === "bg" ? WORDS_5 : WORDS_5_EN), [lang]);
+  const dictSet = useMemo(() => new Set(dict), [dict]);
+  const letters = lang === "bg" ? CYRILLIC_LETTERS : LATIN_LETTERS;
+
   const [answer, setAnswer] = useState<string>(() => WORDS_5[Math.floor(Math.random() * WORDS_5.length)]);
   const [guesses, setGuesses] = useState<string[]>([]);
   const [current, setCurrent] = useState("");
@@ -47,20 +53,42 @@ function WordleGame() {
   const startRef = useRef(Date.now());
   const savedRef = useRef(false);
 
-  const reset = useCallback(() => {
-    setAnswer(WORDS_5[Math.floor(Math.random() * WORDS_5.length)]);
-    setGuesses([]);
-    setCurrent("");
-    setStatus("playing");
-    startRef.current = Date.now();
-    savedRef.current = false;
-  }, []);
+  const reset = useCallback(
+    (nextLang?: Lang) => {
+      const l = nextLang ?? lang;
+      const list = l === "bg" ? WORDS_5 : WORDS_5_EN;
+      setAnswer(list[Math.floor(Math.random() * list.length)]);
+      setGuesses([]);
+      setCurrent("");
+      setStatus("playing");
+      startRef.current = Date.now();
+      savedRef.current = false;
+    },
+    [lang],
+  );
+
+  const switchLang = useCallback(
+    (l: Lang) => {
+      if (l === lang) return;
+      setLang(l);
+      reset(l);
+    },
+    [lang, reset],
+  );
+
+  const flashMsg = (m: string) => {
+    setFlash(m);
+    setTimeout(() => setFlash(null), 1500);
+  };
 
   const submit = useCallback(() => {
     if (status !== "playing") return;
     if (current.length !== WORD_LEN) {
-      setFlash("Думата трябва да е с 5 букви");
-      setTimeout(() => setFlash(null), 1500);
+      flashMsg(lang === "bg" ? "Думата трябва да е с 5 букви" : "Word must be 5 letters");
+      return;
+    }
+    if (!dictSet.has(current)) {
+      flashMsg(lang === "bg" ? "Няма такава дума в речника" : "Not in word list");
       return;
     }
     const next = [...guesses, current];
@@ -68,7 +96,7 @@ function WordleGame() {
     setCurrent("");
     if (current === answer) setStatus("won");
     else if (next.length >= MAX_TRIES) setStatus("lost");
-  }, [current, guesses, status, answer]);
+  }, [current, guesses, status, answer, dictSet, lang]);
 
   const type = useCallback(
     (l: string) => {
@@ -87,12 +115,12 @@ function WordleGame() {
       else if (e.key === "Backspace") back();
       else {
         const u = e.key.toUpperCase();
-        if (CYRILLIC_LETTERS.includes(u)) type(u);
+        if (letters.includes(u)) type(u);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [submit, back, type]);
+  }, [submit, back, type, letters]);
 
   useEffect(() => {
     if (status === "playing" || savedRef.current || !user) return;
@@ -105,9 +133,9 @@ function WordleGame() {
       score,
       durationSeconds: elapsed,
       won,
-      metadata: { tries: guesses.length, answer },
+      metadata: { tries: guesses.length, answer, lang },
     }).catch(console.error);
-  }, [status, user, guesses.length, answer]);
+  }, [status, user, guesses.length, answer, lang]);
 
   const letterStates = useMemo(() => {
     const map: Record<string, LetterState> = {};
@@ -132,13 +160,16 @@ function WordleGame() {
       return { letters: g.split(""), states: s };
     }
     if (r === guesses.length) {
-      const letters = current.padEnd(WORD_LEN, " ").split("");
-      return { letters, states: Array<LetterState>(WORD_LEN).fill("empty") };
+      const l = current.padEnd(WORD_LEN, " ").split("");
+      return { letters: l, states: Array<LetterState>(WORD_LEN).fill("empty") };
     }
     return { letters: Array(WORD_LEN).fill(" "), states: Array<LetterState>(WORD_LEN).fill("empty") };
   });
 
-  const kbRows = ["ЯВЕРТЪУИОПШ", "АСДФГХЙКЛЮЩ", "ЗЬЦЖБНМЧЪ"];
+  const kbRows =
+    lang === "bg"
+      ? ["ЯВЕРТЪУИОПШ", "АСДФГХЙКЛЮЩ", "ЗЬЦЖБНМЧЪ"]
+      : ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
 
   const stateClass = (s: LetterState) =>
     s === "correct"
@@ -149,27 +180,51 @@ function WordleGame() {
           ? "bg-surface-700 border-surface-700 text-slate-400"
           : "border-white/10 text-white";
 
+  const t = (bg: string, en: string) => (lang === "bg" ? bg : en);
+
   return (
     <GameShell
-      title="Познай думата"
-      category="Думи"
-      description="Познай тайната 5-буквена дума за 6 опита. Цветовете подсказват колко близо си."
+      title={t("Познай думата", "Guess the Word")}
+      category={t("Думи", "Words")}
+      description={t(
+        "Познай тайната 5-буквена дума за 6 опита. Цветовете подсказват колко близо си.",
+        "Guess the secret 5-letter word in 6 tries. Colors hint how close you are.",
+      )}
       sidebar={
         <>
+          <div className="bg-surface-800 border border-white/5 rounded-xl p-1 grid grid-cols-2 gap-1">
+            <button
+              onClick={() => switchLang("bg")}
+              className={`py-2 rounded-lg text-sm font-bold transition-colors ${
+                lang === "bg" ? "bg-brand-primary text-white" : "text-slate-400 hover:text-white"
+              }`}
+            >
+              БГ
+            </button>
+            <button
+              onClick={() => switchLang("en")}
+              className={`py-2 rounded-lg text-sm font-bold transition-colors ${
+                lang === "en" ? "bg-brand-primary text-white" : "text-slate-400 hover:text-white"
+              }`}
+            >
+              EN
+            </button>
+          </div>
           <div className="bg-surface-800 border border-white/5 rounded-xl p-4 text-sm text-slate-300 space-y-2">
-            <p><span className="inline-block w-3 h-3 rounded-sm bg-emerald-500 mr-2 align-middle" />Точна буква на точното място</p>
-            <p><span className="inline-block w-3 h-3 rounded-sm bg-amber-500 mr-2 align-middle" />Буквата е в думата, но не там</p>
-            <p><span className="inline-block w-3 h-3 rounded-sm bg-surface-700 border border-white/10 mr-2 align-middle" />Буквата не е в думата</p>
+            <p><span className="inline-block w-3 h-3 rounded-sm bg-emerald-500 mr-2 align-middle" />{t("Точна буква на точното място", "Right letter, right spot")}</p>
+            <p><span className="inline-block w-3 h-3 rounded-sm bg-amber-500 mr-2 align-middle" />{t("Буквата е в думата, но не там", "In the word, wrong spot")}</p>
+            <p><span className="inline-block w-3 h-3 rounded-sm bg-surface-700 border border-white/10 mr-2 align-middle" />{t("Буквата не е в думата", "Not in the word")}</p>
           </div>
           <button
-            onClick={reset}
+            onClick={() => reset()}
             className="w-full py-2.5 rounded-lg bg-brand-primary text-white font-bold hover:bg-brand-primary/90"
           >
-            Нова дума
+            {t("Нова дума", "New word")}
           </button>
           {!user && (
             <div className="bg-surface-800 border border-brand-primary/30 rounded-xl p-5 text-sm text-slate-300">
-              <a href="/auth" className="text-brand-primary font-semibold hover:underline">Влез</a>, за да пазиш резултатите си.
+              <a href="/auth" className="text-brand-primary font-semibold hover:underline">{t("Влез", "Sign in")}</a>
+              {t(", за да пазиш резултатите си.", " to save your scores.")}
             </div>
           )}
         </>
@@ -195,14 +250,14 @@ function WordleGame() {
 
         {status === "won" && (
           <div className="w-full bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-5 text-center">
-            <p className="text-2xl font-bold text-white mb-1">Позна! 🎉</p>
-            <p className="text-slate-300 text-sm">Думата: <span className="font-mono text-emerald-400">{answer}</span></p>
+            <p className="text-2xl font-bold text-white mb-1">{t("Позна! 🎉", "You got it! 🎉")}</p>
+            <p className="text-slate-300 text-sm">{t("Думата:", "Word:")} <span className="font-mono text-emerald-400">{answer}</span></p>
           </div>
         )}
         {status === "lost" && (
           <div className="w-full bg-red-500/10 border border-red-500/30 rounded-xl p-5 text-center">
-            <p className="text-2xl font-bold text-white mb-1">Опитите свършиха</p>
-            <p className="text-slate-300 text-sm">Думата беше: <span className="font-mono text-red-400">{answer}</span></p>
+            <p className="text-2xl font-bold text-white mb-1">{t("Опитите свършиха", "Out of tries")}</p>
+            <p className="text-slate-300 text-sm">{t("Думата беше:", "The word was:")} <span className="font-mono text-red-400">{answer}</span></p>
           </div>
         )}
 
