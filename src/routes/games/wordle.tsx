@@ -3,7 +3,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GameShell } from "@/components/GameShell";
 import { saveScore } from "@/lib/save-score";
 import { useAuth } from "@/hooks/use-auth";
-import { WORDS_5, WORDS_5_EN, CYRILLIC_LETTERS, LATIN_LETTERS } from "@/lib/bg-words";
+import { CYRILLIC_LETTERS, LATIN_LETTERS } from "@/lib/bg-words";
+import { WORDLE_BG } from "@/lib/wordle-bg";
+import { WORDLE_EN } from "@/lib/wordle-en";
+const WORDS_5 = WORDLE_BG;
+const WORDS_5_EN = WORDLE_EN;
 
 export const Route = createFileRoute("/games/wordle")({
   head: () => ({ meta: [{ title: "Познай думата — IDMgames" }] }),
