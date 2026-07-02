@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GamesTicTacToeRouteImport } from './routes/games/tic-tac-toe'
+import { Route as GamesSudokuRouteImport } from './routes/games/sudoku'
 import { Route as GamesSnakeRouteImport } from './routes/games/snake'
 import { Route as Games2048RouteImport } from './routes/games/2048'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
@@ -43,6 +44,11 @@ const IndexRoute = IndexRouteImport.update({
 const GamesTicTacToeRoute = GamesTicTacToeRouteImport.update({
   id: '/games/tic-tac-toe',
   path: '/games/tic-tac-toe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesSudokuRoute = GamesSudokuRouteImport.update({
+  id: '/games/sudoku',
+  path: '/games/sudoku',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GamesSnakeRoute = GamesSnakeRouteImport.update({
@@ -84,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/games/2048': typeof Games2048Route
   '/games/snake': typeof GamesSnakeRoute
+  '/games/sudoku': typeof GamesSudokuRoute
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/games/2048': typeof Games2048Route
   '/games/snake': typeof GamesSnakeRoute
+  '/games/sudoku': typeof GamesSudokuRoute
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/games/2048': typeof Games2048Route
   '/games/snake': typeof GamesSnakeRoute
+  '/games/sudoku': typeof GamesSudokuRoute
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/games/2048'
     | '/games/snake'
+    | '/games/sudoku'
     | '/games/tic-tac-toe'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/games/2048'
     | '/games/snake'
+    | '/games/sudoku'
     | '/games/tic-tac-toe'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/games/2048'
     | '/games/snake'
+    | '/games/sudoku'
     | '/games/tic-tac-toe'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -162,6 +174,7 @@ export interface RootRouteChildren {
   LeaderboardRoute: typeof LeaderboardRoute
   Games2048Route: typeof Games2048Route
   GamesSnakeRoute: typeof GamesSnakeRoute
+  GamesSudokuRoute: typeof GamesSudokuRoute
   GamesTicTacToeRoute: typeof GamesTicTacToeRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -203,6 +216,13 @@ declare module '@tanstack/react-router' {
       path: '/games/tic-tac-toe'
       fullPath: '/games/tic-tac-toe'
       preLoaderRoute: typeof GamesTicTacToeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/sudoku': {
+      id: '/games/sudoku'
+      path: '/games/sudoku'
+      fullPath: '/games/sudoku'
+      preLoaderRoute: typeof GamesSudokuRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/games/snake': {
@@ -268,6 +288,7 @@ const rootRouteChildren: RootRouteChildren = {
   LeaderboardRoute: LeaderboardRoute,
   Games2048Route: Games2048Route,
   GamesSnakeRoute: GamesSnakeRoute,
+  GamesSudokuRoute: GamesSudokuRoute,
   GamesTicTacToeRoute: GamesTicTacToeRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
