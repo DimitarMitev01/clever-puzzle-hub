@@ -9,11 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GamesTicTacToeRouteImport } from './routes/games/tic-tac-toe'
+import { Route as GamesSnakeRouteImport } from './routes/games/snake'
+import { Route as Games2048RouteImport } from './routes/games/2048'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -28,6 +37,21 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesTicTacToeRoute = GamesTicTacToeRouteImport.update({
+  id: '/games/tic-tac-toe',
+  path: '/games/tic-tac-toe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesSnakeRoute = GamesSnakeRouteImport.update({
+  id: '/games/snake',
+  path: '/games/snake',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Games2048Route = Games2048RouteImport.update({
+  id: '/games/2048',
+  path: '/games/2048',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -37,36 +61,82 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/games/2048': typeof Games2048Route
+  '/games/snake': typeof GamesSnakeRoute
+  '/games/tic-tac-toe': typeof GamesTicTacToeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/games/2048': typeof Games2048Route
+  '/games/snake': typeof GamesSnakeRoute
+  '/games/tic-tac-toe': typeof GamesTicTacToeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/games/2048': typeof Games2048Route
+  '/games/snake': typeof GamesSnakeRoute
+  '/games/tic-tac-toe': typeof GamesTicTacToeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/profile'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/leaderboard'
+    | '/profile'
+    | '/games/2048'
+    | '/games/snake'
+    | '/games/tic-tac-toe'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/profile'
-  id: '__root__' | '/' | '/_authenticated' | '/auth' | '/_authenticated/profile'
+  to:
+    | '/'
+    | '/auth'
+    | '/leaderboard'
+    | '/profile'
+    | '/games/2048'
+    | '/games/snake'
+    | '/games/tic-tac-toe'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/leaderboard'
+    | '/_authenticated/profile'
+    | '/games/2048'
+    | '/games/snake'
+    | '/games/tic-tac-toe'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  LeaderboardRoute: typeof LeaderboardRoute
+  Games2048Route: typeof Games2048Route
+  GamesSnakeRoute: typeof GamesSnakeRoute
+  GamesTicTacToeRoute: typeof GamesTicTacToeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -86,6 +156,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/tic-tac-toe': {
+      id: '/games/tic-tac-toe'
+      path: '/games/tic-tac-toe'
+      fullPath: '/games/tic-tac-toe'
+      preLoaderRoute: typeof GamesTicTacToeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/snake': {
+      id: '/games/snake'
+      path: '/games/snake'
+      fullPath: '/games/snake'
+      preLoaderRoute: typeof GamesSnakeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/2048': {
+      id: '/games/2048'
+      path: '/games/2048'
+      fullPath: '/games/2048'
+      preLoaderRoute: typeof Games2048RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/profile': {
@@ -113,6 +204,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  LeaderboardRoute: LeaderboardRoute,
+  Games2048Route: Games2048Route,
+  GamesSnakeRoute: GamesSnakeRoute,
+  GamesTicTacToeRoute: GamesTicTacToeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
