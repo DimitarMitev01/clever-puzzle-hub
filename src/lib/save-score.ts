@@ -16,7 +16,7 @@ export async function saveScore(input: {
     score: input.score,
     duration_seconds: input.durationSeconds,
     won: input.won,
-    metadata: input.metadata ?? null,
+    metadata: (input.metadata ?? null) as never,
   });
   if (error) throw error;
   return { skipped: false as const };
