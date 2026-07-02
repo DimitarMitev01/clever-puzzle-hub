@@ -106,3 +106,40 @@
     -webkit-font-smoothing: antialiased;
   }
 }
+
+/* Light theme: remap hardcoded dark-mode utility classes for readability.
+   Components across the app were authored for the dark theme using literal
+   Tailwind color classes (text-white, text-slate-*, bg-surface-*, etc.).
+   Rather than refactor every file, we override these classes inside .light. */
+.light .text-white { color: oklch(0.208 0.042 265.755) !important; }
+.light .text-slate-100,
+.light .text-slate-200,
+.light .text-slate-300 { color: oklch(0.279 0.041 260.031) !important; }
+.light .text-slate-400,
+.light .text-slate-500 { color: oklch(0.446 0.043 257.281) !important; }
+
+.light .bg-surface-900,
+.light .bg-surface-900\/70,
+.light .bg-surface-900\/50 { background-color: oklch(1 0 0) !important; }
+.light .bg-surface-800,
+.light .bg-surface-800\/70,
+.light .bg-surface-800\/50 { background-color: oklch(0.985 0.005 247.858) !important; }
+.light .bg-surface-700,
+.light .bg-surface-700\/70,
+.light .bg-surface-700\/50 { background-color: oklch(0.955 0.008 247.896) !important; }
+
+.light .border-white\/5,
+.light .border-white\/10,
+.light .border-white\/20 { border-color: oklch(0.208 0.042 265.755 / 12%) !important; }
+.light .bg-white\/5,
+.light .bg-white\/10 { background-color: oklch(0.208 0.042 265.755 / 4%) !important; }
+
+.light .from-surface-900,
+.light .via-surface-900,
+.light .to-surface-900,
+.light .from-surface-800,
+.light .to-surface-800 {
+  --tw-gradient-from: oklch(0.99 0.005 247.858) !important;
+  --tw-gradient-to: oklch(1 0 0) !important;
+}
+
