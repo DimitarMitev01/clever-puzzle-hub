@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as GamesWordleRouteImport } from './routes/games/wordle'
 import { Route as GamesWordSearchRouteImport } from './routes/games/word-search'
 import { Route as GamesTicTacToeRouteImport } from './routes/games/tic-tac-toe'
+import { Route as GamesTetrisRouteImport } from './routes/games/tetris'
 import { Route as GamesSudokuRouteImport } from './routes/games/sudoku'
 import { Route as GamesSnakeRouteImport } from './routes/games/snake'
 import { Route as GamesSlidingPuzzleRouteImport } from './routes/games/sliding-puzzle'
@@ -59,6 +60,11 @@ const GamesWordSearchRoute = GamesWordSearchRouteImport.update({
 const GamesTicTacToeRoute = GamesTicTacToeRouteImport.update({
   id: '/games/tic-tac-toe',
   path: '/games/tic-tac-toe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesTetrisRoute = GamesTetrisRouteImport.update({
+  id: '/games/tetris',
+  path: '/games/tetris',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GamesSudokuRoute = GamesSudokuRouteImport.update({
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/games/sliding-puzzle': typeof GamesSlidingPuzzleRoute
   '/games/snake': typeof GamesSnakeRoute
   '/games/sudoku': typeof GamesSudokuRoute
+  '/games/tetris': typeof GamesTetrisRoute
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
   '/games/word-search': typeof GamesWordSearchRoute
   '/games/wordle': typeof GamesWordleRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/games/sliding-puzzle': typeof GamesSlidingPuzzleRoute
   '/games/snake': typeof GamesSnakeRoute
   '/games/sudoku': typeof GamesSudokuRoute
+  '/games/tetris': typeof GamesTetrisRoute
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
   '/games/word-search': typeof GamesWordSearchRoute
   '/games/wordle': typeof GamesWordleRoute
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/games/sliding-puzzle': typeof GamesSlidingPuzzleRoute
   '/games/snake': typeof GamesSnakeRoute
   '/games/sudoku': typeof GamesSudokuRoute
+  '/games/tetris': typeof GamesTetrisRoute
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
   '/games/word-search': typeof GamesWordSearchRoute
   '/games/wordle': typeof GamesWordleRoute
@@ -182,6 +191,7 @@ export interface FileRouteTypes {
     | '/games/sliding-puzzle'
     | '/games/snake'
     | '/games/sudoku'
+    | '/games/tetris'
     | '/games/tic-tac-toe'
     | '/games/word-search'
     | '/games/wordle'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/games/sliding-puzzle'
     | '/games/snake'
     | '/games/sudoku'
+    | '/games/tetris'
     | '/games/tic-tac-toe'
     | '/games/word-search'
     | '/games/wordle'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/games/sliding-puzzle'
     | '/games/snake'
     | '/games/sudoku'
+    | '/games/tetris'
     | '/games/tic-tac-toe'
     | '/games/word-search'
     | '/games/wordle'
@@ -238,6 +250,7 @@ export interface RootRouteChildren {
   GamesSlidingPuzzleRoute: typeof GamesSlidingPuzzleRoute
   GamesSnakeRoute: typeof GamesSnakeRoute
   GamesSudokuRoute: typeof GamesSudokuRoute
+  GamesTetrisRoute: typeof GamesTetrisRoute
   GamesTicTacToeRoute: typeof GamesTicTacToeRoute
   GamesWordSearchRoute: typeof GamesWordSearchRoute
   GamesWordleRoute: typeof GamesWordleRoute
@@ -295,6 +308,13 @@ declare module '@tanstack/react-router' {
       path: '/games/tic-tac-toe'
       fullPath: '/games/tic-tac-toe'
       preLoaderRoute: typeof GamesTicTacToeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/tetris': {
+      id: '/games/tetris'
+      path: '/games/tetris'
+      fullPath: '/games/tetris'
+      preLoaderRoute: typeof GamesTetrisRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/games/sudoku': {
@@ -392,6 +412,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesSlidingPuzzleRoute: GamesSlidingPuzzleRoute,
   GamesSnakeRoute: GamesSnakeRoute,
   GamesSudokuRoute: GamesSudokuRoute,
+  GamesTetrisRoute: GamesTetrisRoute,
   GamesTicTacToeRoute: GamesTicTacToeRoute,
   GamesWordSearchRoute: GamesWordSearchRoute,
   GamesWordleRoute: GamesWordleRoute,
