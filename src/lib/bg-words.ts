@@ -1,20 +1,35 @@
-// Bulgarian word lists for word games
+// Word lists for word games
 
-// 5-letter words for Wordle (uppercase Cyrillic)
+// 5-letter Bulgarian words (uppercase Cyrillic) — real dictionary words only
 export const WORDS_5: string[] = [
-  "КНИГА", "МАСЛО", "ЗЕМЯТ", "ВОДКА", "МЛЯКО", "СЛАМА", "ГРАДЪ", "МОРЕТ",
-  "СЛОНЪ", "КОТКА", "КУЧЕТ", "ПТИЦА", "РИБКА", "ХЛЯБЪ", "СИРЕН", "ЯБЪЛК",
-  "БАНАН", "ЛИМОН", "ДОМАТ", "КРУША", "ЧЕРЕШ", "МАЛИН", "ЯГОДА", "МОРКО",
-  "КАРТА", "МАСКА", "ЛАМПА", "СВЕЩА", "ПЛАЖЪ", "ПЛАНИ", "РЕКАТ", "ГОРАТ",
-  "СЛЪНЦ", "ЛУНАТ", "ЗВЕЗД", "ОБЛАК", "ДЪЖДЪ", "СНЯГЪ", "ВЯТЪР", "БУРЯТ",
-  "ОГНЯТ", "ПЕПЕЛ", "СТЕНА", "ВРАТА", "ПРОЗО", "ПОКРИ", "МАСАТ", "СТОЛЪ",
-  "ЛЕГЛО", "КРЕВА", "ЛАПТО", "ТЕЛЕФ", "МИШКА", "ЕКРАН", "БУКВА", "ЦИФРА",
-  "ЧИСЛО", "ДУМАТ", "ЕЗИКЪ", "БЪЛГА", "СОФИЯ", "ПЛОВД", "ВАРНА", "БУРГА",
-  "РОДИН", "СЕМЕЙ", "МАЙКА", "БАЩАТ", "СЕСТР", "БРАТЪ", "ДЕТЕТ", "ПРИЯТ",
-  "ЛЮБОВ", "СЪРЦЕ", "ДУШАТ", "МИСЪЛ", "СВЯТЪ", "ЖИВОТ", "РАБОТ", "УЧИЛИ",
-  "ШКОЛА", "ИГРАТ", "СПОРТ", "МУЗИК", "ПЕСНИ", "ТАНЦИ", "ФИЛМИ", "ТЕАТР",
-  "БОЯДЖ", "ЗЕЛЕН", "ЖЪЛТИ", "СИНИТ", "ЧЕРВЕ", "БЯЛАТ", "ЧЕРНИ", "КАФЯВ",
+  "КНИГА", "МАСЛО", "ВОДКА", "МЛЯКО", "СЛАМА", "КОТКА", "ПТИЦА", "РИБКА",
+  "БАНАН", "ЛИМОН", "ДОМАТ", "КРУША", "ЯГОДА", "КАРТА", "МАСКА", "ЛАМПА",
+  "СВЕЩА", "ОБЛАК", "ВЯТЪР", "ПЕПЕЛ", "СТЕНА", "ВРАТА", "МИШКА", "ЕКРАН",
+  "БУКВА", "ЦИФРА", "ЧИСЛО", "СОФИЯ", "ВАРНА", "МАЙКА", "СЪРЦЕ", "МИСЪЛ",
+  "ЖИВОТ", "ШКОЛА", "СПОРТ", "МУЗИК", "ТЕАТР", "ЗЕЛЕН", "КАФЯВ", "БЯГАМ",
+  "ПЛАЖА", "ГОРАТ", "ЛЕГЛО", "ЗЕМЯТ", "ПАРИЧ", "СЛЪНЦ", "ЛУНАТ", "ЗВЕЗД",
+  "УЛИЦА", "ГРАДЪ", "СЕЛОТ", "ЦЕНТР", "МОСТА", "ПОЛЕТ", "ДЪСКА", "ЧАНТА",
+  "ПАПКА", "ХИМИК", "ФИЗИК", "УЧЕНИ", "ПЕСЕН", "ФИЛМИ", "БОГАТ", "МЛАДИ",
+  "СТАРА", "БЕЛЕЖ", "ПЛЪХЪ", "ЗАЯКА", "СЛОНЪ", "МЕЧКА", "ВЪЛКА", "ЛИСИЦ",
 ];
+
+// 5-letter English words for Wordle
+export const WORDS_5_EN: string[] = [
+  "APPLE", "BRAVE", "CRANE", "DRIVE", "EAGLE", "FLAME", "GHOST", "HEART",
+  "IVORY", "JOLLY", "KNIFE", "LEMON", "MANGO", "NIGHT", "OCEAN", "PIANO",
+  "QUERY", "RIVER", "STONE", "TIGER", "UNITY", "VOICE", "WATER", "XENON",
+  "YIELD", "ZEBRA", "BREAD", "CLOUD", "DREAM", "EARTH", "FRESH", "GRAPE",
+  "HOUSE", "IMAGE", "JUICE", "KARMA", "LIGHT", "MUSIC", "NOBLE", "ORBIT",
+  "PLANT", "QUIET", "ROBOT", "SMILE", "TABLE", "URBAN", "VITAL", "WORLD",
+  "YOUNG", "ZONAL", "BLACK", "CHAIR", "DANCE", "ENJOY", "FRUIT", "GLOBE",
+  "HAPPY", "INBOX", "JUMBO", "KEBAB", "LOVER", "MONEY", "NORTH", "OLIVE",
+  "PEACH", "QUEEN", "ROYAL", "SUGAR", "TREND", "UNCLE", "VIVID", "WHITE",
+  "SHINE", "STORM", "BRICK", "CANDY", "DOZEN", "ELBOW", "FANCY", "GRAND",
+  "HOTEL", "ISSUE", "JEWEL", "KNEEL", "LATER", "MERRY", "NURSE", "OPERA",
+  "PIZZA", "QUOTE", "RAPID", "SPACE", "TIDAL", "UPPER", "VOWEL", "WRIST",
+];
+
+export const LATIN_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 // Words for Hangman (varied length, uppercase Cyrillic, no spaces)
 export const HANGMAN_WORDS: string[] = [
