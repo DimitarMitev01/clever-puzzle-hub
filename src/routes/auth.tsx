@@ -156,6 +156,11 @@ function AuthPage() {
             >
               {loading ? "Изчакай..." : mode === "signin" ? "Вход" : "Регистрация"}
             </button>
+            {mode === "signin" && unverifiedError && (
+              <p className="text-center text-xs text-amber-400 mt-2">
+                Проверете spam папката.
+              </p>
+            )}
           </form>
 
           <p className="text-center text-sm text-slate-400 mt-6">
