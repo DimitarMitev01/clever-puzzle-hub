@@ -50,6 +50,7 @@ function SnakeGame() {
     setFood({ x: 5, y: 5 });
     setDir("right");
     setScore(0);
+    scoreRef.current = 0;
     setGameOver(false);
     setRunning(true);
     startRef.current = Date.now();
