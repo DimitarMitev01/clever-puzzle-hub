@@ -41,6 +41,7 @@ function SnakeGame() {
   const [score, setScore] = useState(0);
   const [best, setBest] = useState(0);
   const startRef = useRef<number>(Date.now());
+  const scoreRef = useRef(0);
   const dirRef = useRef<Dir>(dir);
   dirRef.current = dir;
 
