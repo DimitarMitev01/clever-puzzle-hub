@@ -142,6 +142,24 @@ function SnakeGame() {
             <p className="text-xs font-mono uppercase tracking-widest text-slate-500 mb-2">Контроли</p>
             Стрелки или WASD
           </div>
+          <div className="bg-surface-800 border border-white/5 rounded-xl p-5">
+            <p className="text-xs font-mono uppercase tracking-widest text-slate-500 mb-3">Speed</p>
+            <div className="flex items-center gap-2">
+              {[1, 2, 3].map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSpeed(s as 1 | 2 | 3)}
+                  className={`flex-1 py-1.5 rounded-md text-sm font-bold transition-colors ${
+                    speed === s
+                      ? "bg-brand-primary text-white"
+                      : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-slate-200"
+                  }`}
+                >
+                  {s}x
+                </button>
+              ))}
+            </div>
+          </div>
           {!user && (
             <div className="bg-surface-800 border border-brand-primary/30 rounded-xl p-5 text-sm text-slate-300">
               <a href="/auth" className="text-brand-primary font-semibold hover:underline">Влез</a>, за да пазиш резултатите си.
