@@ -128,7 +128,7 @@ function SnakeGame() {
     <GameShell
       title="Snake"
       category="Аркада"
-      description="Управлявай със стрелки или WASD. Изяж червената точка, без да се удариш."
+      description="Управлявай със стрелки или WASD. Изяй ябълката, без да се удариш. Всяка ябълка носи 20×Speed точки."
       sidebar={
         <>
           <div className="bg-surface-800 border border-white/5 rounded-xl p-5">
