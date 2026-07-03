@@ -106,6 +106,7 @@ function AdminContent() {
   const getUsers = useServerFn(adminListUsers);
   const getScores = useServerFn(adminListScores);
   const deleteScore = useServerFn(adminDeleteScore);
+  const deleteUser = useServerFn(adminDeleteUser);
   const lockFn = useServerFn(lockAdmin);
 
   const [tab, setTab] = useState<"stats" | "users" | "scores">("stats");
