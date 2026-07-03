@@ -2,18 +2,24 @@ import { createServerFn } from "@tanstack/react-start";
 import { useSession } from "@tanstack/react-start/server";
 import { createHash, timingSafeEqual } from "node:crypto";
 
-const sessionConfig = {
-  password: process.env.ADMIN_SESSION_SECRET ?? "dev-only-fallback-secret-change-me-please-32chars",
-  name: "idm-admin-gate",
-  maxAge: 60 * 60 * 8, // 8 hours
-  cookie: {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none" as const,
-    path: "/",
-    partitioned: true,
-  },
-};
+function getSessionConfig() {
+  const password = process.env.ADMIN_SESSION_SECRET;
+  if (!password || password.length < 32) {
+    throw new Error("ADMIN_SESSION_SECRET is not configured");
+  }
+  return {
+    password,
+    name: "idm-admin-gate",
+    maxAge: 60 * 60 * 8, // 8 hours
+    cookie: {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none" as const,
+      path: "/",
+      partitioned: true,
+    },
+  };
+}
 
 type AdminSession = { unlocked?: boolean };
 
