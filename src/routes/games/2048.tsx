@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { GameShell } from "@/components/GameShell";
 import { useSwipe } from "@/components/TouchControls";
 import { saveScore } from "@/lib/save-score";
