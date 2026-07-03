@@ -37,6 +37,7 @@ function SnakeGame() {
   const [dir, setDir] = useState<Dir>("right");
   const [running, setRunning] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const [speed, setSpeed] = useState<1 | 2 | 3>(2);
   const [score, setScore] = useState(0);
   const [best, setBest] = useState(0);
   const startRef = useRef<number>(Date.now());
