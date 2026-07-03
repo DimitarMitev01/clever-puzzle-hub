@@ -13,6 +13,7 @@ import {
   adminListUsers,
   adminListScores,
   adminDeleteScore,
+  adminDeleteUser,
 } from "@/lib/admin.functions";
 import { Shield, Trash2, Lock, LogOut } from "lucide-react";
 
@@ -105,6 +106,7 @@ function AdminContent() {
   const getUsers = useServerFn(adminListUsers);
   const getScores = useServerFn(adminListScores);
   const deleteScore = useServerFn(adminDeleteScore);
+  const deleteUser = useServerFn(adminDeleteUser);
   const lockFn = useServerFn(lockAdmin);
 
   const [tab, setTab] = useState<"stats" | "users" | "scores">("stats");
@@ -125,6 +127,16 @@ function AdminContent() {
       qc.invalidateQueries({ queryKey: ["admin-stats"] });
     },
   });
+
+  const delUserMut = useMutation({
+    mutationFn: (id: string) => deleteUser({ data: { id } }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-users"] });
+      qc.invalidateQueries({ queryKey: ["admin-stats"] });
+      qc.invalidateQueries({ queryKey: ["admin-scores"] });
+    },
+  });
+
 
   return (
     <Shell>
@@ -202,10 +214,11 @@ function AdminContent() {
                 <th className="px-5 py-3">Играч</th>
                 <th className="px-5 py-3 text-right">Игри</th>
                 <th className="px-5 py-3 hidden md:table-cell">Регистрация</th>
+                <th className="px-5 py-3 text-right">Действия</th>
               </tr>
             </thead>
             <tbody>
-              {users.isLoading && <tr><td colSpan={3} className="px-5 py-8 text-center text-slate-500">Зареждане...</td></tr>}
+              {users.isLoading && <tr><td colSpan={4} className="px-5 py-8 text-center text-slate-500">Зареждане...</td></tr>}
               {users.data?.map((u) => (
                 <tr key={u.id} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
                   <td className="px-5 py-3">
@@ -216,9 +229,25 @@ function AdminContent() {
                   <td className="px-5 py-3 hidden md:table-cell text-slate-500 text-xs">
                     {new Date(u.created_at).toLocaleDateString("bg-BG")}
                   </td>
+                  <td className="px-5 py-3 text-right">
+                    <button
+                      onClick={() => {
+                        const name = u.display_name || u.username || u.id.slice(0, 8);
+                        if (confirm(`Изтриване на профил "${name}"? Действието е необратимо и ще изтрие всички резултати.`)) {
+                          delUserMut.mutate(u.id);
+                        }
+                      }}
+                      disabled={delUserMut.isPending}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/20 disabled:opacity-50"
+                    >
+                      <Trash2 className="size-3.5" />
+                      Изтрий
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
+
           </table>
         </div>
       )}
