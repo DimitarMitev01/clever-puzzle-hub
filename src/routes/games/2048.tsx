@@ -229,7 +229,8 @@ function Game2048() {
           <button onClick={() => doMove("down")} className="p-4 bg-surface-700 rounded-lg text-white">↓</button>
           <button onClick={() => doMove("right")} className="p-4 bg-surface-700 rounded-lg text-white">→</button>
         </div>
-      </div>
+      </SwipeArea>
+
     </GameShell>
   );
 }
