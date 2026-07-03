@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, User as UserIcon } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import logoAsset from "@/assets/idm-logo.png.asset.json";
+import logoAsset from "@/assets/idm-logo-new.webp.asset.json";
 
 export function Header() {
   const { user } = useAuth();
@@ -22,7 +22,7 @@ export function Header() {
             <img
               src={logoAsset.url}
               alt="IDMgames лого"
-              className="size-9 rounded-lg object-cover"
+              className="size-12 rounded-full object-cover"
             />
             IDMgames
           </Link>
