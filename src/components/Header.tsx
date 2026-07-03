@@ -34,14 +34,9 @@ export function Header() {
               Класация
             </Link>
             {user && (
-              <>
-                <Link to="/profile" className="hover:text-white transition-colors" activeProps={{ className: "text-white" }}>
-                  Профил
-                </Link>
-                <Link to="/admin" className="hover:text-white transition-colors" activeProps={{ className: "text-white" }}>
-                  Админ
-                </Link>
-              </>
+              <Link to="/profile" className="hover:text-white transition-colors" activeProps={{ className: "text-white" }}>
+                Профил
+              </Link>
             )}
           </div>
         </div>
