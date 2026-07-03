@@ -32,6 +32,10 @@ function AuthPage() {
     if (user) navigate({ to: "/profile" });
   }, [user, navigate]);
 
+  useEffect(() => {
+    setUnverifiedError(false);
+  }, [email, password, mode]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const ep = emailSchema.safeParse(email);
