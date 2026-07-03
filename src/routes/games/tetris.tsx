@@ -294,7 +294,7 @@ function TetrisGame() {
         </>
       }
     >
-      <div className="flex justify-center">
+      <div className="flex flex-col items-center gap-5">
         <div
           className="inline-grid gap-[2px] p-2 bg-surface-900/60 rounded-xl border border-white/5 relative"
           style={{ gridTemplateColumns: `repeat(${COLS}, 1.5rem)` }}
@@ -319,7 +319,21 @@ function TetrisGame() {
             </div>
           )}
         </div>
+        <TetrisPad
+          onLeft={() => tryMove(0, -1)}
+          onRight={() => tryMove(0, 1)}
+          onDown={() => tryMove(1, 0)}
+          onRotate={() => tryMove(0, 0, 1)}
+          onDrop={() => {
+            if (over || paused) return;
+            let np = { ...piece };
+            while (!collides(board, { ...np, r: np.r + 1 })) np = { ...np, r: np.r + 1 };
+            setPiece(np);
+            setTimeout(lockAndNext, 0);
+          }}
+        />
       </div>
+
     </GameShell>
   );
 }
