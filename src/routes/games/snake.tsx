@@ -97,9 +97,9 @@ function SnakeGame() {
         }
         return next;
       });
-    }, 110);
+    }, speed === 1 ? 160 : speed === 2 ? 110 : 70);
     return () => clearInterval(interval);
-  }, [running, food, endGame]);
+  }, [running, food, endGame, speed]);
 
   const changeDir = useCallback((nd: Dir) => {
     const cur = dirRef.current;
