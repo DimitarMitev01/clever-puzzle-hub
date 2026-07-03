@@ -140,3 +140,22 @@ export const adminDeleteScore = createServerFn({ method: "POST" })
     if (error) throw new Error("Failed to delete");
     return { ok: true as const };
   });
+
+export const adminDeleteUser = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => {
+    const r = (d ?? {}) as Record<string, unknown>;
+    const id = String(r.id ?? "");
+    if (!id) throw new Error("Missing id");
+    return { id };
+  })
+  .handler(async ({ data }) => {
+    await requireUnlocked();
+    const admin = await loadAdmin();
+    await admin.from("game_scores").delete().eq("user_id", data.id);
+    await admin.from("user_roles").delete().eq("user_id", data.id);
+    await admin.from("profiles").delete().eq("id", data.id);
+    const { error } = await admin.auth.admin.deleteUser(data.id);
+    if (error) throw new Error(error.message || "Failed to delete user");
+    return { ok: true as const };
+  });
+
