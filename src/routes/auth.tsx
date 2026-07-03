@@ -24,12 +24,17 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [unverifiedError, setUnverifiedError] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (user) navigate({ to: "/profile" });
   }, [user, navigate]);
+
+  useEffect(() => {
+    setUnverifiedError(false);
+  }, [email, password, mode]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -57,7 +62,11 @@ function AuthPage() {
         toast.success("Добре дошъл!");
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Възникна грешка");
+      const msg = err instanceof Error ? err.message : "Възникна грешка";
+      const isUnverified =
+        /email not confirmed|not confirmed|unverified|потвърден|verified/i.test(msg);
+      setUnverifiedError(isUnverified);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -147,6 +156,11 @@ function AuthPage() {
             >
               {loading ? "Изчакай..." : mode === "signin" ? "Вход" : "Регистрация"}
             </button>
+            {mode === "signin" && unverifiedError && (
+              <p className="text-center text-xs text-amber-400 mt-2">
+                Проверете spam папката.
+              </p>
+            )}
           </form>
 
           <p className="text-center text-sm text-slate-400 mt-6">
