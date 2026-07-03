@@ -37,6 +37,7 @@ function SnakeGame() {
   const [dir, setDir] = useState<Dir>("right");
   const [running, setRunning] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const [speed, setSpeed] = useState<1 | 2 | 3>(2);
   const [score, setScore] = useState(0);
   const [best, setBest] = useState(0);
   const startRef = useRef<number>(Date.now());
@@ -96,9 +97,9 @@ function SnakeGame() {
         }
         return next;
       });
-    }, 110);
+    }, speed === 1 ? 160 : speed === 2 ? 110 : 70);
     return () => clearInterval(interval);
-  }, [running, food, endGame]);
+  }, [running, food, endGame, speed]);
 
   const changeDir = useCallback((nd: Dir) => {
     const cur = dirRef.current;
@@ -140,6 +141,24 @@ function SnakeGame() {
           <div className="bg-surface-800 border border-white/5 rounded-xl p-5 text-sm text-slate-400">
             <p className="text-xs font-mono uppercase tracking-widest text-slate-500 mb-2">Контроли</p>
             Стрелки или WASD
+          </div>
+          <div className="bg-surface-800 border border-white/5 rounded-xl p-5">
+            <p className="text-xs font-mono uppercase tracking-widest text-slate-500 mb-3">Speed</p>
+            <div className="flex items-center gap-2">
+              {[1, 2, 3].map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSpeed(s as 1 | 2 | 3)}
+                  className={`flex-1 py-1.5 rounded-md text-sm font-bold transition-colors ${
+                    speed === s
+                      ? "bg-brand-primary text-white"
+                      : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-slate-200"
+                  }`}
+                >
+                  {s}x
+                </button>
+              ))}
+            </div>
           </div>
           {!user && (
             <div className="bg-surface-800 border border-brand-primary/30 rounded-xl p-5 text-sm text-slate-300">
