@@ -58,7 +58,11 @@ function AuthPage() {
         toast.success("Добре дошъл!");
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Възникна грешка");
+      const msg = err instanceof Error ? err.message : "Възникна грешка";
+      const isUnverified =
+        /email not confirmed|not confirmed|unverified|потвърден|verified/i.test(msg);
+      setUnverifiedError(isUnverified);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
