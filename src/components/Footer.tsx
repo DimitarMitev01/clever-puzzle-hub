@@ -1,4 +1,4 @@
-import logoAsset from "@/assets/idm-logo.png.asset.json";
+import logoAsset from "@/assets/idm-logo-new.webp.asset.json";
 
 export function Footer() {
   return (
