@@ -63,14 +63,14 @@ function AuthPage() {
       }
     } catch (err: any) {
       const msg = err instanceof Error ? err.message : "Възникна грешка";
-      const code = err?.code || err?.error_code || "";
-      const status = err?.status;
+      const code = String(err?.code || err?.error_code || "");
       const isUnverified =
         /email.?not.?confirmed|not.?confirmed|unverified|потвърд|verified|confirm/i.test(msg) ||
-        /email_not_confirmed|not_confirmed/i.test(String(code)) ||
-        (status === 400 && mode === "signin");
+        /email_not_confirmed|not_confirmed/i.test(code);
+      console.log("[auth] signin error", { msg, code, status: err?.status, err });
       setUnverifiedError(isUnverified);
       toast.error(msg);
+
 
     } finally {
       setLoading(false);
