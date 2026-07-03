@@ -93,7 +93,7 @@ const TILE_COLORS: Record<number, string> = {
 };
 
 type MoveDir = "left" | "right" | "up" | "down";
-function SwipeArea({ doMove, children }: { doMove: (d: MoveDir) => void; children: React.ReactNode }) {
+function SwipeArea({ doMove, children }: { doMove: (d: MoveDir) => void; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   useSwipe(ref, (d) => doMove(d));
   return (
