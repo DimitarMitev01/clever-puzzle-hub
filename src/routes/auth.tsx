@@ -157,9 +157,9 @@ function AuthPage() {
               {loading ? "Изчакай..." : mode === "signin" ? "Вход" : "Регистрация"}
             </button>
             {mode === "signin" && unverifiedError && (
-              <p className="text-center text-xs text-amber-400 mt-2">
-                Проверете spam папката.
-              </p>
+              <div className="rounded-lg border border-amber-400/40 bg-amber-400/10 px-3 py-2 text-center text-sm font-semibold text-amber-300">
+                Моля, проверете spam папката си!
+              </div>
             )}
           </form>
 
