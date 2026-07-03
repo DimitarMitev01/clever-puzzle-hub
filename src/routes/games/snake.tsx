@@ -79,11 +79,7 @@ function SnakeGame() {
       setSnake((prev) => {
         const head = prev[0];
         const d = DIRS[dirRef.current];
-        const nh = { x: head.x + d.x, y: head.y + d.y };
-        if (nh.x < 0 || nh.x >= SIZE || nh.y < 0 || nh.y >= SIZE) {
-          endGame(prev.length - 1);
-          return prev;
-        }
+        const nh = { x: (head.x + d.x + SIZE) % SIZE, y: (head.y + d.y + SIZE) % SIZE };
         if (prev.some((s) => s.x === nh.x && s.y === nh.y)) {
           endGame(prev.length - 1);
           return prev;
