@@ -22,7 +22,7 @@ export function Header() {
             <img
               src={logoAsset.url}
               alt="IDMgames лого"
-              className="size-9 rounded-lg object-cover"
+              className="size-12 rounded-full object-cover"
             />
             IDMgames
           </Link>
