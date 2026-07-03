@@ -41,6 +41,7 @@ function SnakeGame() {
   const [score, setScore] = useState(0);
   const [best, setBest] = useState(0);
   const startRef = useRef<number>(Date.now());
+  const scoreRef = useRef(0);
   const dirRef = useRef<Dir>(dir);
   dirRef.current = dir;
 
@@ -49,6 +50,7 @@ function SnakeGame() {
     setFood({ x: 5, y: 5 });
     setDir("right");
     setScore(0);
+    scoreRef.current = 0;
     setGameOver(false);
     setRunning(true);
     startRef.current = Date.now();
@@ -81,7 +83,7 @@ function SnakeGame() {
         const d = DIRS[dirRef.current];
         const nh = { x: (head.x + d.x + SIZE) % SIZE, y: (head.y + d.y + SIZE) % SIZE };
         if (prev.some((s) => s.x === nh.x && s.y === nh.y)) {
-          endGame(prev.length - 1);
+          endGame(scoreRef.current);
           return prev;
         }
         const grew = nh.x === food.x && nh.y === food.y;
@@ -89,7 +91,7 @@ function SnakeGame() {
         if (!grew) next.pop();
         else {
           setFood(randomFood(next));
-          setScore((s) => s + 10);
+          setScore((s) => { const ns = s + 20 * speed; scoreRef.current = ns; return ns; });
         }
         return next;
       });
@@ -126,7 +128,7 @@ function SnakeGame() {
     <GameShell
       title="Snake"
       category="Аркада"
-      description="Управлявай със стрелки или WASD. Изяж червената точка, без да се удариш."
+      description="Управлявай със стрелки или WASD. Изяй ябълката, без да се удариш. Всяка ябълка носи 20×Speed точки."
       sidebar={
         <>
           <div className="bg-surface-800 border border-white/5 rounded-xl p-5">
