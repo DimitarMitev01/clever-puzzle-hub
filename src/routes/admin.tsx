@@ -13,6 +13,7 @@ import {
   adminListUsers,
   adminListScores,
   adminDeleteScore,
+  adminDeleteUser,
 } from "@/lib/admin.functions";
 import { Shield, Trash2, Lock, LogOut } from "lucide-react";
 
