@@ -30,7 +30,7 @@ function passwordMatches(input: string, expected: string): boolean {
 }
 
 async function requireUnlocked() {
-  const session = await useSession<AdminSession>(sessionConfig);
+  const session = await useSession<AdminSession>(getSessionConfig());
   if (!session.data.unlocked) throw new Error("Locked");
   return session;
 }
@@ -41,7 +41,7 @@ async function loadAdmin() {
 }
 
 export const isAdminUnlocked = createServerFn({ method: "GET" }).handler(async () => {
-  const session = await useSession<AdminSession>(sessionConfig);
+  const session = await useSession<AdminSession>(getSessionConfig());
   return { unlocked: Boolean(session.data.unlocked) };
 });
 
@@ -58,13 +58,13 @@ export const unlockAdmin = createServerFn({ method: "POST" })
     if (!passwordMatches(data.password, expected)) {
       return { ok: false as const };
     }
-    const session = await useSession<AdminSession>(sessionConfig);
+    const session = await useSession<AdminSession>(getSessionConfig());
     await session.update({ unlocked: true });
     return { ok: true as const };
   });
 
 export const lockAdmin = createServerFn({ method: "POST" }).handler(async () => {
-  const session = await useSession<AdminSession>(sessionConfig);
+  const session = await useSession<AdminSession>(getSessionConfig());
   await session.clear();
   return { ok: true as const };
 });
