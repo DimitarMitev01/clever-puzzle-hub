@@ -83,7 +83,7 @@ function SnakeGame() {
         const d = DIRS[dirRef.current];
         const nh = { x: (head.x + d.x + SIZE) % SIZE, y: (head.y + d.y + SIZE) % SIZE };
         if (prev.some((s) => s.x === nh.x && s.y === nh.y)) {
-          endGame(prev.length - 1);
+          endGame(scoreRef.current);
           return prev;
         }
         const grew = nh.x === food.x && nh.y === food.y;
@@ -91,7 +91,7 @@ function SnakeGame() {
         if (!grew) next.pop();
         else {
           setFood(randomFood(next));
-          setScore((s) => s + 10);
+          setScore((s) => { const ns = s + 20 * speed; scoreRef.current = ns; return ns; });
         }
         return next;
       });
