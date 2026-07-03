@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GameShell } from "@/components/GameShell";
+import { TetrisPad } from "@/components/TouchControls";
 import { saveScore } from "@/lib/save-score";
 import { useAuth } from "@/hooks/use-auth";
+
 
 export const Route = createFileRoute("/games/tetris")({
   head: () => ({ meta: [{ title: "Тетрис — IDMgames" }] }),
