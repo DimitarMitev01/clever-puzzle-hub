@@ -151,7 +151,8 @@ function SnakeGame() {
     >
       <div className="flex flex-col items-center gap-5">
         <div
-          className="relative bg-surface-900 rounded-xl border border-white/10 overflow-hidden"
+          ref={boardRef}
+          className="relative bg-surface-900 rounded-xl border border-white/10 overflow-hidden touch-none max-w-full"
           style={{ width: SIZE * CELL, height: SIZE * CELL }}
         >
           {snake.map((s, i) => (
@@ -182,7 +183,9 @@ function SnakeGame() {
             </div>
           )}
         </div>
+        <DPad onDir={changeDir} />
       </div>
+
     </GameShell>
   );
 }
