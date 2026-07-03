@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { submitScore } from "@/lib/submit-score.functions";
 
 export async function saveScore(input: {
   gameSlug: string;
@@ -8,16 +9,22 @@ export async function saveScore(input: {
   metadata?: Record<string, unknown>;
 }) {
   const { data: session } = await supabase.auth.getSession();
-  const user = session.session?.user;
-  if (!user) return { skipped: true as const };
-  const { error } = await supabase.from("game_scores").insert({
-    user_id: user.id,
-    game_slug: input.gameSlug,
-    score: input.score,
-    duration_seconds: input.durationSeconds,
-    won: input.won,
-    metadata: (input.metadata ?? null) as never,
-  });
-  if (error) throw error;
-  return { skipped: false as const };
+  if (!session.session?.user) return { skipped: true as const };
+  try {
+    await submitScore({
+      data: {
+        gameSlug: input.gameSlug,
+        score: input.score,
+        durationSeconds: input.durationSeconds,
+        won: input.won,
+        metadata: input.metadata ?? null,
+      },
+    });
+    return { skipped: false as const };
+  } catch (error) {
+    // Silently ignore invalid/rejected submissions on the client;
+    // server-side validation is the source of truth.
+    console.warn("saveScore rejected:", error);
+    return { skipped: true as const };
+  }
 }
