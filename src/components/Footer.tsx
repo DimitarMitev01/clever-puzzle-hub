@@ -9,9 +9,9 @@ export function Footer() {
           © {new Date().getFullYear()} IDMgames. Всички права запазени.
         </div>
         <div className="flex gap-8 text-sm font-medium text-slate-400">
+          <Link to="/about" className="hover:text-white transition-colors">За нас</Link>
           <a href="#" className="hover:text-white transition-colors">Условия</a>
           <a href="#" className="hover:text-white transition-colors">Поверителност</a>
-          <a href="#" className="hover:text-white transition-colors">Контакт</a>
         </div>
       </div>
     </footer>
