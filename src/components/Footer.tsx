@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import logoAsset from "@/assets/idm-logo-new.webp.asset.json";
 
 export function Footer() {
