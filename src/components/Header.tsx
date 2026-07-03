@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, User as UserIcon } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import logoAsset from "@/assets/idm-logo.png.asset.json";
 
 export function Header() {
   const { user } = useAuth();
@@ -18,9 +19,11 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-8">
           <Link to="/" className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-            <span className="size-8 bg-brand-primary rounded-lg flex items-center justify-center text-[11px] font-bold text-white tracking-tighter">
-              IDM
-            </span>
+            <img
+              src={logoAsset.url}
+              alt="IDMgames лого"
+              className="size-9 rounded-lg object-cover"
+            />
             IDMgames
           </Link>
           <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400">
