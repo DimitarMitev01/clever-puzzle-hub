@@ -128,6 +128,16 @@ function AdminContent() {
     },
   });
 
+  const delUserMut = useMutation({
+    mutationFn: (id: string) => deleteUser({ data: { id } }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-users"] });
+      qc.invalidateQueries({ queryKey: ["admin-stats"] });
+      qc.invalidateQueries({ queryKey: ["admin-scores"] });
+    },
+  });
+
+
   return (
     <Shell>
       <div className="flex items-center justify-between mb-2">
