@@ -130,8 +130,8 @@ export const adminSetRole = createServerFn({ method: "POST" })
     const role = String(r.role ?? "");
     const grant = Boolean(r.grant);
     if (!userId) throw new Error("Missing userId");
-    if (!["admin", "moderator", "user"].includes(role)) throw new Error("Bad role");
-    return { userId, role: role as "admin" | "moderator" | "user", grant };
+    if (!["admin", "user"].includes(role)) throw new Error("Bad role");
+    return { userId, role: role as "admin" | "user", grant };
   })
   .handler(async ({ context, data }) => {
     await assertAdmin(context.supabase, context.userId);
