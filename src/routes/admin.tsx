@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -6,59 +6,97 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { GAMES, getGame } from "@/lib/games";
 import {
-  isAdmin,
-  claimFirstAdmin,
+  isAdminUnlocked,
+  unlockAdmin,
+  lockAdmin,
   adminStats,
   adminListUsers,
   adminListScores,
   adminDeleteScore,
-  adminSetRole,
 } from "@/lib/admin.functions";
-import { Shield, Trash2, Crown, UserX } from "lucide-react";
+import { Shield, Trash2, Lock, LogOut } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/admin")({
+export const Route = createFileRoute("/admin")({
   ssr: false,
-  head: () => ({ meta: [{ title: "Админ панел — IDMgames" }] }),
-  beforeLoad: async ({ context }) => {
-    if (!context.user) throw redirect({ to: "/auth" });
-  },
+  head: () => ({
+    meta: [
+      { title: "Админ панел — IDMgames" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: AdminPage,
 });
 
 function AdminPage() {
-  const check = useServerFn(isAdmin);
-  const claim = useServerFn(claimFirstAdmin);
-  const gate = useQuery({ queryKey: ["is-admin"], queryFn: () => check() });
+  const check = useServerFn(isAdminUnlocked);
+  const gate = useQuery({ queryKey: ["admin-unlocked"], queryFn: () => check() });
 
   if (gate.isLoading) {
     return <Shell><p className="text-slate-400">Проверка...</p></Shell>;
   }
-  if (!gate.data?.admin) {
-    return (
-      <Shell>
-        <div className="bg-surface-800 border border-white/5 rounded-2xl p-8 text-center">
-          <Shield className="size-10 text-slate-500 mx-auto mb-4" />
-          <p className="text-white font-bold mb-2">Нямаш достъп до админ панела.</p>
-          <p className="text-sm text-slate-400 mb-6">Ако си собственик на платформата и все още няма администратор, поеми ролята.</p>
-          <button
-            onClick={async () => {
-              try {
-                await claim();
-                gate.refetch();
-              } catch (e: any) {
-                alert(e?.message ?? "Грешка");
-              }
-            }}
-            className="px-5 py-2.5 rounded-lg bg-brand-primary text-white font-bold hover:bg-brand-primary/90"
-          >
-            Стани първи администратор
-          </button>
-        </div>
-      </Shell>
-    );
+  if (!gate.data?.unlocked) {
+    return <LockScreen onUnlocked={() => gate.refetch()} />;
+  }
+  return <AdminContent />;
+}
+
+function LockScreen({ onUnlocked }: { onUnlocked: () => void }) {
+  const unlock = useServerFn(unlockAdmin);
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setPending(true);
+    setError(null);
+    try {
+      const res = await unlock({ data: { password } });
+      if (res.ok) {
+        setPassword("");
+        onUnlocked();
+      } else {
+        setError("Грешна парола.");
+      }
+    } catch (err: any) {
+      setError(err?.message ?? "Грешка");
+    } finally {
+      setPending(false);
+    }
   }
 
-  return <AdminContent />;
+  return (
+    <Shell>
+      <div className="max-w-md mx-auto mt-16 bg-surface-800 border border-white/5 rounded-2xl p-8">
+        <div className="flex flex-col items-center text-center mb-6">
+          <div className="size-14 rounded-full bg-brand-primary/10 border border-brand-primary/30 flex items-center justify-center mb-4">
+            <Lock className="size-6 text-brand-primary" />
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-1">Защитена зона</h1>
+          <p className="text-sm text-slate-400">Въведи админ паролата, за да продължиш.</p>
+        </div>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <input
+            type="password"
+            autoFocus
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Парола"
+            className="w-full px-4 py-3 rounded-lg bg-surface-900 border border-white/10 text-white placeholder:text-slate-600 focus:border-brand-primary focus:outline-none"
+          />
+          {error && <p className="text-sm text-red-400">{error}</p>}
+          <button
+            type="submit"
+            disabled={pending || !password}
+            className="w-full px-5 py-3 rounded-lg bg-brand-primary text-white font-bold hover:bg-brand-primary/90 disabled:opacity-50"
+          >
+            {pending ? "Проверка..." : "Отключи"}
+          </button>
+        </form>
+      </div>
+    </Shell>
+  );
 }
 
 function AdminContent() {
@@ -67,7 +105,7 @@ function AdminContent() {
   const getUsers = useServerFn(adminListUsers);
   const getScores = useServerFn(adminListScores);
   const deleteScore = useServerFn(adminDeleteScore);
-  const setRole = useServerFn(adminSetRole);
+  const lockFn = useServerFn(lockAdmin);
 
   const [tab, setTab] = useState<"stats" | "users" | "scores">("stats");
   const [gameFilter, setGameFilter] = useState<string>("");
@@ -88,16 +126,22 @@ function AdminContent() {
     },
   });
 
-  const roleMut = useMutation({
-    mutationFn: (v: { userId: string; role: "admin" | "user"; grant: boolean }) => setRole({ data: v }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-users"] }),
-  });
-
   return (
     <Shell>
-      <div className="flex items-center gap-3 mb-2">
-        <Shield className="size-6 text-brand-secondary" />
-        <p className="text-xs font-mono uppercase tracking-widest text-brand-secondary">Управление</p>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-3">
+          <Shield className="size-6 text-brand-secondary" />
+          <p className="text-xs font-mono uppercase tracking-widest text-brand-secondary">Управление</p>
+        </div>
+        <button
+          onClick={async () => {
+            await lockFn();
+            qc.invalidateQueries({ queryKey: ["admin-unlocked"] });
+          }}
+          className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-lg border border-white/10 text-slate-300 hover:border-red-500/40 hover:text-red-400"
+        >
+          <LogOut className="size-3" /> Заключи
+        </button>
       </div>
       <h1 className="text-4xl font-bold text-white mb-8">Админ панел</h1>
 
@@ -156,57 +200,24 @@ function AdminContent() {
             <thead className="text-left text-[10px] uppercase tracking-widest text-slate-500 font-mono">
               <tr className="border-b border-white/5">
                 <th className="px-5 py-3">Играч</th>
-                <th className="px-5 py-3">Роли</th>
                 <th className="px-5 py-3 text-right">Игри</th>
                 <th className="px-5 py-3 hidden md:table-cell">Регистрация</th>
-                <th className="px-5 py-3 text-right">Действия</th>
               </tr>
             </thead>
             <tbody>
-              {users.isLoading && <tr><td colSpan={5} className="px-5 py-8 text-center text-slate-500">Зареждане...</td></tr>}
-              {users.data?.map((u) => {
-                const admin = u.roles.includes("admin");
-                return (
-                  <tr key={u.id} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
-                    <td className="px-5 py-3">
-                      <p className="font-semibold text-white">{u.display_name || u.username || "—"}</p>
-                      <p className="text-xs text-slate-500 font-mono">{u.id.slice(0, 8)}</p>
-                    </td>
-                    <td className="px-5 py-3">
-                      {admin ? (
-                        <span className="inline-flex items-center gap-1 text-xs font-bold text-brand-secondary">
-                          <Crown className="size-3" /> ADMIN
-                        </span>
-                      ) : (
-                        <span className="text-xs text-slate-500">player</span>
-                      )}
-                    </td>
-                    <td className="px-5 py-3 text-right font-mono text-slate-300">{u.plays}</td>
-                    <td className="px-5 py-3 hidden md:table-cell text-slate-500 text-xs">
-                      {new Date(u.created_at).toLocaleDateString("bg-BG")}
-                    </td>
-                    <td className="px-5 py-3 text-right">
-                      <button
-                        onClick={() => {
-                          if (admin && !confirm("Премахни admin от този потребител?")) return;
-                          roleMut.mutate({ userId: u.id, role: "admin", grant: !admin });
-                        }}
-                        className={`text-xs font-bold px-3 py-1.5 rounded-lg border ${
-                          admin
-                            ? "border-red-500/40 text-red-400 hover:bg-red-500/10"
-                            : "border-brand-primary/40 text-brand-primary hover:bg-brand-primary/10"
-                        }`}
-                      >
-                        {admin ? (
-                          <span className="inline-flex items-center gap-1"><UserX className="size-3" />Отнеми</span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1"><Crown className="size-3" />Направи admin</span>
-                        )}
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
+              {users.isLoading && <tr><td colSpan={3} className="px-5 py-8 text-center text-slate-500">Зареждане...</td></tr>}
+              {users.data?.map((u) => (
+                <tr key={u.id} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
+                  <td className="px-5 py-3">
+                    <p className="font-semibold text-white">{u.display_name || u.username || "—"}</p>
+                    <p className="text-xs text-slate-500 font-mono">{u.id.slice(0, 8)}</p>
+                  </td>
+                  <td className="px-5 py-3 text-right font-mono text-slate-300">{u.plays}</td>
+                  <td className="px-5 py-3 hidden md:table-cell text-slate-500 text-xs">
+                    {new Date(u.created_at).toLocaleDateString("bg-BG")}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
