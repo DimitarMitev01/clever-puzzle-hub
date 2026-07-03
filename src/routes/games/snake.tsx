@@ -100,22 +100,30 @@ function SnakeGame() {
     return () => clearInterval(interval);
   }, [running, food, endGame]);
 
+  const changeDir = useCallback((nd: Dir) => {
+    const cur = dirRef.current;
+    if ((cur === "up" && nd === "down") || (cur === "down" && nd === "up") ||
+        (cur === "left" && nd === "right") || (cur === "right" && nd === "left")) return;
+    setDir(nd);
+  }, []);
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      const cur = dirRef.current;
       const map: Record<string, Dir> = {
         ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right",
         w: "up", s: "down", a: "left", d: "right",
       };
       const nd = map[e.key];
-      if (!nd) return;
-      if ((cur === "up" && nd === "down") || (cur === "down" && nd === "up") ||
-          (cur === "left" && nd === "right") || (cur === "right" && nd === "left")) return;
-      setDir(nd);
+      if (nd) changeDir(nd);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [changeDir]);
+
+  const boardRef = useRef<HTMLDivElement>(null);
+  useSwipe(boardRef, changeDir);
+
+
 
   return (
     <GameShell
