@@ -1,7 +1,21 @@
 import { Link } from "@tanstack/react-router";
 import type { Game } from "@/lib/games";
+import { GAME_COVERS } from "@/lib/game-covers";
 
 function GameThumb({ game }: { game: Game }) {
+  const cover = GAME_COVERS[game.slug];
+  if (cover) {
+    return (
+      <img
+        src={cover}
+        alt={game.title}
+        loading="lazy"
+        width={1024}
+        height={576}
+        className="w-full h-full object-cover"
+      />
+    );
+  }
   const initials = game.title.slice(0, 2).toUpperCase();
   return (
     <div className={`w-full h-full bg-gradient-to-br ${game.gradient} bg-surface-700 flex items-center justify-center`}>
