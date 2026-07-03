@@ -61,12 +61,17 @@ function AuthPage() {
         if (error) throw error;
         toast.success("Добре дошъл!");
       }
-    } catch (err) {
+    } catch (err: any) {
       const msg = err instanceof Error ? err.message : "Възникна грешка";
+      const code = err?.code || err?.error_code || "";
+      const status = err?.status;
       const isUnverified =
-        /email not confirmed|not confirmed|unverified|потвърден|verified/i.test(msg);
+        /email.?not.?confirmed|not.?confirmed|unverified|потвърд|verified|confirm/i.test(msg) ||
+        /email_not_confirmed|not_confirmed/i.test(String(code)) ||
+        (status === 400 && mode === "signin");
       setUnverifiedError(isUnverified);
       toast.error(msg);
+
     } finally {
       setLoading(false);
     }
