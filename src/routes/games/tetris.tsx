@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GameShell } from "@/components/GameShell";
+import { TetrisPad } from "@/components/TouchControls";
 import { saveScore } from "@/lib/save-score";
 import { useAuth } from "@/hooks/use-auth";
+
 
 export const Route = createFileRoute("/games/tetris")({
   head: () => ({ meta: [{ title: "Тетрис — IDMgames" }] }),
@@ -292,7 +294,7 @@ function TetrisGame() {
         </>
       }
     >
-      <div className="flex justify-center">
+      <div className="flex flex-col items-center gap-5">
         <div
           className="inline-grid gap-[2px] p-2 bg-surface-900/60 rounded-xl border border-white/5 relative"
           style={{ gridTemplateColumns: `repeat(${COLS}, 1.5rem)` }}
@@ -317,7 +319,21 @@ function TetrisGame() {
             </div>
           )}
         </div>
+        <TetrisPad
+          onLeft={() => tryMove(0, -1)}
+          onRight={() => tryMove(0, 1)}
+          onDown={() => tryMove(1, 0)}
+          onRotate={() => tryMove(0, 0, 1)}
+          onDrop={() => {
+            if (over || paused) return;
+            let np = { ...piece };
+            while (!collides(board, { ...np, r: np.r + 1 })) np = { ...np, r: np.r + 1 };
+            setPiece(np);
+            setTimeout(lockAndNext, 0);
+          }}
+        />
       </div>
+
     </GameShell>
   );
 }

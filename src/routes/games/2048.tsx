@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { GameShell } from "@/components/GameShell";
+import { useSwipe } from "@/components/TouchControls";
 import { saveScore } from "@/lib/save-score";
 import { useAuth } from "@/hooks/use-auth";
+
 
 export const Route = createFileRoute("/games/2048")({
   head: () => ({ meta: [{ title: "2048 — IDMgames" }] }),
@@ -89,6 +91,18 @@ const TILE_COLORS: Record<number, string> = {
   1024: "bg-red-500 text-white",
   2048: "bg-brand-secondary text-white",
 };
+
+type MoveDir = "left" | "right" | "up" | "down";
+function SwipeArea({ doMove, children }: { doMove: (d: MoveDir) => void; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useSwipe(ref, (d) => doMove(d));
+  return (
+    <div ref={ref} className="flex flex-col items-center gap-5 touch-none">
+      {children}
+    </div>
+  );
+}
+
 
 function Game2048() {
   const { user } = useAuth();
@@ -188,8 +202,10 @@ function Game2048() {
         </>
       }
     >
-      <div className="flex flex-col items-center gap-5">
+      <SwipeArea doMove={doMove}>
         <div className="relative bg-surface-900 p-3 rounded-2xl border border-white/10">
+
+
           <div className="grid grid-cols-4 gap-3">
             {grid.flatMap((row, r) =>
               row.map((val, c) => (
@@ -225,7 +241,8 @@ function Game2048() {
           <button onClick={() => doMove("down")} className="p-4 bg-surface-700 rounded-lg text-white">↓</button>
           <button onClick={() => doMove("right")} className="p-4 bg-surface-700 rounded-lg text-white">→</button>
         </div>
-      </div>
+      </SwipeArea>
+
     </GameShell>
   );
 }

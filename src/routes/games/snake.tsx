@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GameShell } from "@/components/GameShell";
+import { DPad, useSwipe } from "@/components/TouchControls";
 import { saveScore } from "@/lib/save-score";
 import { useAuth } from "@/hooks/use-auth";
+
 
 export const Route = createFileRoute("/games/snake")({
   head: () => ({ meta: [{ title: "Snake — IDMgames" }] }),
@@ -98,22 +100,30 @@ function SnakeGame() {
     return () => clearInterval(interval);
   }, [running, food, endGame]);
 
+  const changeDir = useCallback((nd: Dir) => {
+    const cur = dirRef.current;
+    if ((cur === "up" && nd === "down") || (cur === "down" && nd === "up") ||
+        (cur === "left" && nd === "right") || (cur === "right" && nd === "left")) return;
+    setDir(nd);
+  }, []);
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      const cur = dirRef.current;
       const map: Record<string, Dir> = {
         ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right",
         w: "up", s: "down", a: "left", d: "right",
       };
       const nd = map[e.key];
-      if (!nd) return;
-      if ((cur === "up" && nd === "down") || (cur === "down" && nd === "up") ||
-          (cur === "left" && nd === "right") || (cur === "right" && nd === "left")) return;
-      setDir(nd);
+      if (nd) changeDir(nd);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [changeDir]);
+
+  const boardRef = useRef<HTMLDivElement>(null);
+  useSwipe(boardRef, changeDir);
+
+
 
   return (
     <GameShell
@@ -141,7 +151,8 @@ function SnakeGame() {
     >
       <div className="flex flex-col items-center gap-5">
         <div
-          className="relative bg-surface-900 rounded-xl border border-white/10 overflow-hidden"
+          ref={boardRef}
+          className="relative bg-surface-900 rounded-xl border border-white/10 overflow-hidden touch-none max-w-full"
           style={{ width: SIZE * CELL, height: SIZE * CELL }}
         >
           {snake.map((s, i) => (
@@ -172,7 +183,9 @@ function SnakeGame() {
             </div>
           )}
         </div>
+        <DPad onDir={changeDir} />
       </div>
+
     </GameShell>
   );
 }
