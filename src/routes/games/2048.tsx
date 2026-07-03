@@ -190,8 +190,9 @@ function Game2048() {
         </>
       }
     >
-      <div className="flex flex-col items-center gap-5">
+      <Board2048Container doMove={doMove}>
         <div className="relative bg-surface-900 p-3 rounded-2xl border border-white/10">
+
           <div className="grid grid-cols-4 gap-3">
             {grid.flatMap((row, r) =>
               row.map((val, c) => (
