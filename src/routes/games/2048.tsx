@@ -92,6 +92,18 @@ const TILE_COLORS: Record<number, string> = {
   2048: "bg-brand-secondary text-white",
 };
 
+type MoveDir = "left" | "right" | "up" | "down";
+function SwipeArea({ doMove, children }: { doMove: (d: MoveDir) => void; children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useSwipe(ref, (d) => doMove(d));
+  return (
+    <div ref={ref} className="flex flex-col items-center gap-5 touch-none">
+      {children}
+    </div>
+  );
+}
+
+
 function Game2048() {
   const { user } = useAuth();
   const [grid, setGrid] = useState<Grid>(() => addRandom(addRandom(emptyGrid())));
