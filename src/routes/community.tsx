@@ -129,6 +129,9 @@ function ModeratorPanel() {
     queryKey: ["my-mod-status", user?.id],
     queryFn: () => statusFn(),
     enabled: Boolean(user),
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 
   const [message, setMessage] = useState("");
