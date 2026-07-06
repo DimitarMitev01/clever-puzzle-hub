@@ -174,17 +174,25 @@ function ModeratorPanel() {
 
   if (status.data?.isModerator) {
     return (
-      <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-6">
-        <div className="flex items-center gap-2 mb-2">
-          <CheckCircle2 className="size-5 text-emerald-400" />
-          <p className="font-bold text-white">
-            Ти си {status.data.isAdmin ? "админ" : "модератор"}
+      <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <CheckCircle2 className="size-5 text-emerald-400" />
+            <p className="font-bold text-white">
+              Ти си {status.data.isAdmin ? "админ" : "модератор"}
+            </p>
+          </div>
+          <p className="text-sm text-slate-300">
+            Създавай кръстословици, куизове и Math Sprint игри с помощта на AI.
           </p>
         </div>
-        <p className="text-sm text-slate-300">
-          Скоро тук ще се появи форма за създаване на нови игри (кръстословица, куиз,
-          Math Sprint).
-        </p>
+        <Link
+          to="/moderator"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-primary text-white text-sm font-bold hover:bg-brand-primary/90 shrink-0"
+        >
+          <Sparkles className="size-4" />
+          Създай игра
+        </Link>
       </div>
     );
   }
