@@ -33,6 +33,9 @@ export function Header() {
             <Link to="/leaderboard" className="hover:text-white transition-colors" activeProps={{ className: "text-white" }}>
               Класация
             </Link>
+            <Link to="/community" className="hover:text-white transition-colors" activeProps={{ className: "text-white" }}>
+              От потребителите
+            </Link>
             <Link to="/about" className="hover:text-white transition-colors" activeProps={{ className: "text-white" }}>
               За нас
             </Link>
