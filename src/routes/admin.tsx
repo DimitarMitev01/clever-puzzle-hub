@@ -115,7 +115,12 @@ function AdminContent() {
   const deleteUser = useServerFn(adminDeleteUser);
   const lockFn = useServerFn(lockAdmin);
 
-  const [tab, setTab] = useState<"stats" | "users" | "scores">("stats");
+  const listModReqs = useServerFn(adminListModRequests);
+  const reviewModReq = useServerFn(adminReviewModRequest);
+  const listPendingGames = useServerFn(adminListPendingGames);
+  const reviewGame = useServerFn(adminReviewGame);
+
+  const [tab, setTab] = useState<"stats" | "users" | "scores" | "requests" | "games">("stats");
   const [gameFilter, setGameFilter] = useState<string>("");
 
   const stats = useQuery({ queryKey: ["admin-stats"], queryFn: () => getStats() });
@@ -124,6 +129,26 @@ function AdminContent() {
     queryKey: ["admin-scores", gameFilter],
     queryFn: () => getScores({ data: { gameSlug: gameFilter || null } }),
     enabled: tab === "scores",
+  });
+  const modReqs = useQuery({
+    queryKey: ["admin-mod-requests"],
+    queryFn: () => listModReqs(),
+    enabled: tab === "requests",
+  });
+  const pendingGames = useQuery({
+    queryKey: ["admin-pending-games"],
+    queryFn: () => listPendingGames(),
+    enabled: tab === "games",
+  });
+
+  const reviewModMut = useMutation({
+    mutationFn: (v: { id: string; action: "approve" | "reject" }) => reviewModReq({ data: v }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-mod-requests"] }),
+  });
+  const reviewGameMut = useMutation({
+    mutationFn: (v: { id: string; action: "approve" | "reject" | "delete"; reason?: string | null }) =>
+      reviewGame({ data: v }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-pending-games"] }),
   });
 
   const delMut = useMutation({
