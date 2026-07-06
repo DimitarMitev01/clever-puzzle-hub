@@ -15,7 +15,13 @@ import {
   adminDeleteScore,
   adminDeleteUser,
 } from "@/lib/admin.functions";
-import { Shield, Trash2, Lock, LogOut } from "lucide-react";
+import {
+  adminListModRequests,
+  adminReviewModRequest,
+  adminListPendingGames,
+  adminReviewGame,
+} from "@/lib/community.functions";
+import { Shield, Trash2, Lock, LogOut, Check, X, Clock } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
