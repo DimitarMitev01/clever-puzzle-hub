@@ -105,10 +105,12 @@ export const submitCommunityGame = createServerFn({ method: "POST" })
     const title = String(r.title ?? "").trim().slice(0, 120);
     const description = r.description ? String(r.description).trim().slice(0, 500) : null;
     const topic = r.topic ? String(r.topic).trim().slice(0, 200) : null;
-    const content = r.content ?? {};
+    const contentJson = String(r.contentJson ?? "{}");
     if (!["crossword", "quiz", "math_sprint"].includes(type)) throw new Error("Invalid type");
     if (!title) throw new Error("Заглавието е задължително");
-    return { type, title, description, topic, content };
+    let content: any;
+    try { content = JSON.parse(contentJson); } catch { throw new Error("Невалидно съдържание"); }
+    return { type, title, description, topic, content: content as Record<string, unknown> };
   })
   .handler(async ({ data, context }) => {
     await requireMod(context.supabase, context.userId);
