@@ -132,6 +132,23 @@ function RootComponent() {
     return () => data.subscription.unsubscribe();
   }, [router, queryClient]);
 
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem("idm-visit-tracked") === "1") return;
+      let visitorId = localStorage.getItem("idm-visitor-id");
+      if (!visitorId) {
+        visitorId = crypto.randomUUID();
+        localStorage.setItem("idm-visitor-id", visitorId);
+      }
+      sessionStorage.setItem("idm-visit-tracked", "1");
+      trackVisit({ data: { visitorId, path: window.location.pathname } }).catch(() => {
+        sessionStorage.removeItem("idm-visit-tracked");
+      });
+    } catch {
+      // ignore (storage blocked)
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
