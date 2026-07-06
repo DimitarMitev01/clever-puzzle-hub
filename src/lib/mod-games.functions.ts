@@ -92,7 +92,7 @@ export const aiDraftGame = createServerFn({ method: "POST" })
     } catch {
       throw new Error("AI върна невалиден JSON, опитай отново");
     }
-    return { draft: parsed };
+    return { draft: parsed as Record<string, unknown> };
   });
 
 // ---------- Submit game ----------
