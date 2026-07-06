@@ -161,6 +161,27 @@ export type Database = {
         }
         Relationships: []
       }
+      site_visits: {
+        Row: {
+          created_at: string
+          id: number
+          path: string | null
+          visitor_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          path?: string | null
+          visitor_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          path?: string | null
+          visitor_id?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
