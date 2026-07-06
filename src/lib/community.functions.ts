@@ -41,10 +41,11 @@ async function loadAdmin() {
 export const getMyModStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabase, userId } = context;
+    const { userId } = context;
+    const admin = await loadAdmin();
     const [{ data: roles }, { data: requests }] = await Promise.all([
-      supabase.from("user_roles").select("role").eq("user_id", userId),
-      supabase
+      admin.from("user_roles").select("role").eq("user_id", userId),
+      admin
         .from("moderator_requests")
         .select("id, status, message, created_at, reviewed_at")
         .eq("user_id", userId)
@@ -52,8 +53,9 @@ export const getMyModStatus = createServerFn({ method: "GET" })
         .limit(5),
     ]);
     const roleSet = new Set((roles ?? []).map((r) => r.role as string));
+    const hasApprovedRequest = (requests ?? []).some((r) => r.status === "approved");
     return {
-      isModerator: roleSet.has("moderator") || roleSet.has("admin"),
+      isModerator: roleSet.has("moderator") || roleSet.has("admin") || hasApprovedRequest,
       isAdmin: roleSet.has("admin"),
       requests: requests ?? [],
     };
