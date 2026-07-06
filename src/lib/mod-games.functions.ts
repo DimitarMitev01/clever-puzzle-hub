@@ -86,7 +86,7 @@ export const aiDraftGame = createServerFn({ method: "POST" })
     let text: string = json?.choices?.[0]?.message?.content ?? "";
     // Strip potential ```json fences
     text = text.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
-    let parsed: unknown;
+    let parsed: any;
     try {
       parsed = JSON.parse(text);
     } catch {
