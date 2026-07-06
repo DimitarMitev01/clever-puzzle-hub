@@ -189,19 +189,39 @@ function AdminContent() {
       <h1 className="text-4xl font-bold text-white mb-8">Админ панел</h1>
 
       <div className="flex gap-2 mb-6 flex-wrap">
-        {(["stats", "users", "scores"] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-lg text-sm font-bold border ${
-              tab === t
-                ? "bg-brand-primary text-white border-brand-primary"
-                : "bg-surface-800 text-slate-300 border-white/10 hover:border-brand-primary/40"
-            }`}
-          >
-            {t === "stats" ? "Статистика" : t === "users" ? "Потребители" : "Резултати"}
-          </button>
-        ))}
+        {(["stats", "users", "scores", "requests", "games"] as const).map((t) => {
+          const labels: Record<typeof t, string> = {
+            stats: "Статистика",
+            users: "Потребители",
+            scores: "Резултати",
+            requests: "Заявки за модератор",
+            games: "Игри от общността",
+          };
+          const pendingBadge =
+            t === "requests"
+              ? modReqs.data?.filter((r) => r.status === "pending").length ?? 0
+              : t === "games"
+                ? pendingGames.data?.filter((g) => g.status === "pending").length ?? 0
+                : 0;
+          return (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`px-4 py-2 rounded-lg text-sm font-bold border inline-flex items-center gap-2 ${
+                tab === t
+                  ? "bg-brand-primary text-white border-brand-primary"
+                  : "bg-surface-800 text-slate-300 border-white/10 hover:border-brand-primary/40"
+              }`}
+            >
+              {labels[t]}
+              {pendingBadge > 0 && (
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  {pendingBadge}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {tab === "stats" && (
