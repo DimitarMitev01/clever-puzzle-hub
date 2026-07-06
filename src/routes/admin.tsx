@@ -15,7 +15,13 @@ import {
   adminDeleteScore,
   adminDeleteUser,
 } from "@/lib/admin.functions";
-import { Shield, Trash2, Lock, LogOut } from "lucide-react";
+import {
+  adminListModRequests,
+  adminReviewModRequest,
+  adminListPendingGames,
+  adminReviewGame,
+} from "@/lib/community.functions";
+import { Shield, Trash2, Lock, LogOut, Check, X, Clock } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -109,7 +115,12 @@ function AdminContent() {
   const deleteUser = useServerFn(adminDeleteUser);
   const lockFn = useServerFn(lockAdmin);
 
-  const [tab, setTab] = useState<"stats" | "users" | "scores">("stats");
+  const listModReqs = useServerFn(adminListModRequests);
+  const reviewModReq = useServerFn(adminReviewModRequest);
+  const listPendingGames = useServerFn(adminListPendingGames);
+  const reviewGame = useServerFn(adminReviewGame);
+
+  const [tab, setTab] = useState<"stats" | "users" | "scores" | "requests" | "games">("stats");
   const [gameFilter, setGameFilter] = useState<string>("");
 
   const stats = useQuery({ queryKey: ["admin-stats"], queryFn: () => getStats() });
@@ -118,6 +129,26 @@ function AdminContent() {
     queryKey: ["admin-scores", gameFilter],
     queryFn: () => getScores({ data: { gameSlug: gameFilter || null } }),
     enabled: tab === "scores",
+  });
+  const modReqs = useQuery({
+    queryKey: ["admin-mod-requests"],
+    queryFn: () => listModReqs(),
+    enabled: tab === "requests",
+  });
+  const pendingGames = useQuery({
+    queryKey: ["admin-pending-games"],
+    queryFn: () => listPendingGames(),
+    enabled: tab === "games",
+  });
+
+  const reviewModMut = useMutation({
+    mutationFn: (v: { id: string; action: "approve" | "reject" }) => reviewModReq({ data: v }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-mod-requests"] }),
+  });
+  const reviewGameMut = useMutation({
+    mutationFn: (v: { id: string; action: "approve" | "reject" | "delete"; reason?: string | null }) =>
+      reviewGame({ data: v }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-pending-games"] }),
   });
 
   const delMut = useMutation({
@@ -158,19 +189,39 @@ function AdminContent() {
       <h1 className="text-4xl font-bold text-white mb-8">Админ панел</h1>
 
       <div className="flex gap-2 mb-6 flex-wrap">
-        {(["stats", "users", "scores"] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-lg text-sm font-bold border ${
-              tab === t
-                ? "bg-brand-primary text-white border-brand-primary"
-                : "bg-surface-800 text-slate-300 border-white/10 hover:border-brand-primary/40"
-            }`}
-          >
-            {t === "stats" ? "Статистика" : t === "users" ? "Потребители" : "Резултати"}
-          </button>
-        ))}
+        {(["stats", "users", "scores", "requests", "games"] as const).map((t) => {
+          const labels: Record<typeof t, string> = {
+            stats: "Статистика",
+            users: "Потребители",
+            scores: "Резултати",
+            requests: "Заявки за модератор",
+            games: "Игри от общността",
+          };
+          const pendingBadge =
+            t === "requests"
+              ? modReqs.data?.filter((r) => r.status === "pending").length ?? 0
+              : t === "games"
+                ? pendingGames.data?.filter((g) => g.status === "pending").length ?? 0
+                : 0;
+          return (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`px-4 py-2 rounded-lg text-sm font-bold border inline-flex items-center gap-2 ${
+                tab === t
+                  ? "bg-brand-primary text-white border-brand-primary"
+                  : "bg-surface-800 text-slate-300 border-white/10 hover:border-brand-primary/40"
+              }`}
+            >
+              {labels[t]}
+              {pendingBadge > 0 && (
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  {pendingBadge}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {tab === "stats" && (
@@ -318,6 +369,156 @@ function AdminContent() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {tab === "requests" && (
+        <div className="bg-surface-800 rounded-2xl border border-white/5 overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="text-left text-[10px] uppercase tracking-widest text-slate-500 font-mono">
+              <tr className="border-b border-white/5">
+                <th className="px-5 py-3">Потребител</th>
+                <th className="px-5 py-3">Съобщение</th>
+                <th className="px-5 py-3">Статус</th>
+                <th className="px-5 py-3 hidden md:table-cell">Дата</th>
+                <th className="px-5 py-3 text-right">Действия</th>
+              </tr>
+            </thead>
+            <tbody>
+              {modReqs.isLoading && (
+                <tr><td colSpan={5} className="px-5 py-8 text-center text-slate-500">Зареждане...</td></tr>
+              )}
+              {modReqs.data?.length === 0 && (
+                <tr><td colSpan={5} className="px-5 py-8 text-center text-slate-500">Няма заявки.</td></tr>
+              )}
+              {modReqs.data?.map((r) => (
+                <tr key={r.id} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02] align-top">
+                  <td className="px-5 py-3">
+                    <p className="font-semibold text-white">{r.display_name}</p>
+                    <p className="text-xs text-slate-500 font-mono">{r.user_id.slice(0, 8)}</p>
+                  </td>
+                  <td className="px-5 py-3 text-slate-300 max-w-md">
+                    {r.message ? <span className="italic">"{r.message}"</span> : <span className="text-slate-600">—</span>}
+                  </td>
+                  <td className="px-5 py-3">
+                    {r.status === "pending" && (
+                      <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                        <Clock className="size-3" /> чака
+                      </span>
+                    )}
+                    {r.status === "approved" && (
+                      <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+                        <Check className="size-3" /> одобрен
+                      </span>
+                    )}
+                    {r.status === "rejected" && (
+                      <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full bg-red-500/10 text-red-300 border border-red-500/30">
+                        <X className="size-3" /> отказан
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-5 py-3 hidden md:table-cell text-slate-500 text-xs">
+                    {new Date(r.created_at).toLocaleDateString("bg-BG")}
+                  </td>
+                  <td className="px-5 py-3 text-right">
+                    {r.status === "pending" && (
+                      <div className="inline-flex gap-2">
+                        <button
+                          onClick={() => reviewModMut.mutate({ id: r.id, action: "approve" })}
+                          disabled={reviewModMut.isPending}
+                          className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50"
+                        >
+                          <Check className="size-3.5" /> Одобри
+                        </button>
+                        <button
+                          onClick={() => reviewModMut.mutate({ id: r.id, action: "reject" })}
+                          disabled={reviewModMut.isPending}
+                          className="inline-flex items-center gap-1 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/20 disabled:opacity-50"
+                        >
+                          <X className="size-3.5" /> Откажи
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {tab === "games" && (
+        <div className="bg-surface-800 rounded-2xl border border-white/5 overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="text-left text-[10px] uppercase tracking-widest text-slate-500 font-mono">
+              <tr className="border-b border-white/5">
+                <th className="px-5 py-3">Игра</th>
+                <th className="px-5 py-3">Тип</th>
+                <th className="px-5 py-3">Статус</th>
+                <th className="px-5 py-3 hidden md:table-cell">Автор</th>
+                <th className="px-5 py-3 text-right">Действия</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pendingGames.isLoading && (
+                <tr><td colSpan={5} className="px-5 py-8 text-center text-slate-500">Зареждане...</td></tr>
+              )}
+              {pendingGames.data?.length === 0 && (
+                <tr><td colSpan={5} className="px-5 py-8 text-center text-slate-500">Няма чакащи игри.</td></tr>
+              )}
+              {pendingGames.data?.map((g) => (
+                <tr key={g.id} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
+                  <td className="px-5 py-3">
+                    <p className="font-semibold text-white">{g.title}</p>
+                    {g.description && <p className="text-xs text-slate-500 line-clamp-1">{g.description}</p>}
+                  </td>
+                  <td className="px-5 py-3 text-slate-300 text-xs font-mono uppercase">{g.game_type}</td>
+                  <td className="px-5 py-3">
+                    {g.status === "pending" ? (
+                      <span className="text-xs font-bold text-amber-300">чака</span>
+                    ) : (
+                      <span className="text-xs font-bold text-red-300">отказана</span>
+                    )}
+                  </td>
+                  <td className="px-5 py-3 hidden md:table-cell text-xs font-mono text-slate-500">{g.author_id.slice(0, 8)}</td>
+                  <td className="px-5 py-3 text-right">
+                    <div className="inline-flex gap-2">
+                      {g.status === "pending" && (
+                        <>
+                          <button
+                            onClick={() => reviewGameMut.mutate({ id: g.id, action: "approve" })}
+                            disabled={reviewGameMut.isPending}
+                            className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50"
+                          >
+                            <Check className="size-3.5" /> Публикувай
+                          </button>
+                          <button
+                            onClick={() => reviewGameMut.mutate({ id: g.id, action: "reject" })}
+                            disabled={reviewGameMut.isPending}
+                            className="inline-flex items-center gap-1 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/20 disabled:opacity-50"
+                          >
+                            <X className="size-3.5" /> Откажи
+                          </button>
+                        </>
+                      )}
+                      <button
+                        onClick={() => {
+                          if (confirm("Изтрий тази игра?")) {
+                            reviewGameMut.mutate({ id: g.id, action: "delete" });
+                          }
+                        }}
+                        disabled={reviewGameMut.isPending}
+                        className="p-2 rounded-lg text-red-400 hover:bg-red-500/10"
+                        aria-label="Изтрий"
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </Shell>

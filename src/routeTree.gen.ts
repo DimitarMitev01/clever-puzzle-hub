@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as CommunityRouteImport } from './routes/community'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
@@ -33,6 +34,11 @@ import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/em
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/community': typeof CommunityRoute
   '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/games/2048': typeof Games2048Route
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/community': typeof CommunityRoute
   '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/games/2048': typeof Games2048Route
@@ -180,6 +188,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/community': typeof CommunityRoute
   '/leaderboard': typeof LeaderboardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/games/2048': typeof Games2048Route
@@ -203,6 +212,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/auth'
+    | '/community'
     | '/leaderboard'
     | '/profile'
     | '/games/2048'
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/auth'
+    | '/community'
     | '/leaderboard'
     | '/profile'
     | '/games/2048'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/auth'
+    | '/community'
     | '/leaderboard'
     | '/_authenticated/profile'
     | '/games/2048'
@@ -269,6 +281,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
+  CommunityRoute: typeof CommunityRoute
   LeaderboardRoute: typeof LeaderboardRoute
   Games2048Route: typeof Games2048Route
   GamesHangmanRoute: typeof GamesHangmanRoute
@@ -292,6 +305,13 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -447,6 +467,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
+  CommunityRoute: CommunityRoute,
   LeaderboardRoute: LeaderboardRoute,
   Games2048Route: Games2048Route,
   GamesHangmanRoute: GamesHangmanRoute,
