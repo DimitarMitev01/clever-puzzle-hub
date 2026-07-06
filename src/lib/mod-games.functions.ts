@@ -86,13 +86,13 @@ export const aiDraftGame = createServerFn({ method: "POST" })
     let text: string = json?.choices?.[0]?.message?.content ?? "";
     // Strip potential ```json fences
     text = text.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
-    let parsed: any;
+    // Validate parseable JSON but return as string for serialization safety
     try {
-      parsed = JSON.parse(text);
+      JSON.parse(text);
     } catch {
       throw new Error("AI върна невалиден JSON, опитай отново");
     }
-    return { draft: parsed as Record<string, unknown> };
+    return { draftJson: text };
   });
 
 // ---------- Submit game ----------
