@@ -72,10 +72,21 @@ export const lockAdmin = createServerFn({ method: "POST" }).handler(async () => 
 export const adminStats = createServerFn({ method: "GET" }).handler(async () => {
   await requireUnlocked();
   const admin = await loadAdmin();
-  const [{ count: users }, { count: scores }, { data: perGame }] = await Promise.all([
+  const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const [
+    { count: users },
+    { count: scores },
+    { data: perGame },
+    { count: visitsTotal },
+    { count: visitsToday },
+    { data: visitorRows },
+  ] = await Promise.all([
     admin.from("profiles").select("id", { count: "exact", head: true }),
     admin.from("game_scores").select("id", { count: "exact", head: true }),
     admin.from("game_scores").select("game_slug, score").order("score", { ascending: false }).limit(1000),
+    admin.from("site_visits").select("id", { count: "exact", head: true }),
+    admin.from("site_visits").select("id", { count: "exact", head: true }).gte("created_at", dayAgo),
+    admin.from("site_visits").select("visitor_id").limit(10000),
   ]);
   const byGame: Record<string, { plays: number; top: number }> = {};
   for (const r of perGame ?? []) {
@@ -84,7 +95,15 @@ export const adminStats = createServerFn({ method: "GET" }).handler(async () => 
     if (r.score > g.top) g.top = r.score;
     byGame[r.game_slug] = g;
   }
-  return { users: users ?? 0, scores: scores ?? 0, byGame };
+  const uniqueVisitors = new Set((visitorRows ?? []).map((v) => v.visitor_id)).size;
+  return {
+    users: users ?? 0,
+    scores: scores ?? 0,
+    byGame,
+    visits: visitsTotal ?? 0,
+    visitsToday: visitsToday ?? 0,
+    uniqueVisitors,
+  };
 });
 
 export const adminListUsers = createServerFn({ method: "GET" }).handler(async () => {

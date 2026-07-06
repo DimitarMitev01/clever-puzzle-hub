@@ -175,7 +175,10 @@ function AdminContent() {
 
       {tab === "stats" && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <Metric label="Посетители (общо)" value={stats.data?.visits ?? 0} />
+            <Metric label="Уникални посетители" value={stats.data?.uniqueVisitors ?? 0} />
+            <Metric label="Посещения (24ч)" value={stats.data?.visitsToday ?? 0} />
             <Metric label="Потребители" value={stats.data?.users ?? 0} />
             <Metric label="Записани резултати" value={stats.data?.scores ?? 0} />
             <Metric label="Активни игри" value={GAMES.filter((g) => g.status === "live").length} />
