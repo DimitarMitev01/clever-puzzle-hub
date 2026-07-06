@@ -27,6 +27,7 @@ import { Route as GamesMemoryRouteImport } from './routes/games/memory'
 import { Route as GamesHangmanRouteImport } from './routes/games/hangman'
 import { Route as Games2048RouteImport } from './routes/games/2048'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedModeratorRouteImport } from './routes/_authenticated/moderator'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -120,6 +121,11 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedModeratorRoute = AuthenticatedModeratorRouteImport.update({
+  id: '/moderator',
+  path: '/moderator',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/community': typeof CommunityRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/moderator': typeof AuthenticatedModeratorRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/games/2048': typeof Games2048Route
   '/games/hangman': typeof GamesHangmanRoute
@@ -166,6 +173,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/community': typeof CommunityRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/moderator': typeof AuthenticatedModeratorRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/games/2048': typeof Games2048Route
   '/games/hangman': typeof GamesHangmanRoute
@@ -190,6 +198,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/community': typeof CommunityRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/_authenticated/moderator': typeof AuthenticatedModeratorRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/games/2048': typeof Games2048Route
   '/games/hangman': typeof GamesHangmanRoute
@@ -214,6 +223,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/community'
     | '/leaderboard'
+    | '/moderator'
     | '/profile'
     | '/games/2048'
     | '/games/hangman'
@@ -236,6 +246,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/community'
     | '/leaderboard'
+    | '/moderator'
     | '/profile'
     | '/games/2048'
     | '/games/hangman'
@@ -259,6 +270,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/community'
     | '/leaderboard'
+    | '/_authenticated/moderator'
     | '/_authenticated/profile'
     | '/games/2048'
     | '/games/hangman'
@@ -426,6 +438,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/moderator': {
+      id: '/_authenticated/moderator'
+      path: '/moderator'
+      fullPath: '/moderator'
+      preLoaderRoute: typeof AuthenticatedModeratorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -451,10 +470,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedModeratorRoute: typeof AuthenticatedModeratorRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedModeratorRoute: AuthenticatedModeratorRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
 }
 
