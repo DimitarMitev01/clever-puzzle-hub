@@ -5,8 +5,9 @@ type GameType = "crossword" | "quiz" | "math_sprint";
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
-async function requireMod(supabase: any, userId: string) {
-  const { data } = await supabase
+async function requireMod(_supabase: unknown, userId: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
     .from("user_roles")
     .select("role")
     .eq("user_id", userId);
@@ -114,7 +115,8 @@ export const submitCommunityGame = createServerFn({ method: "POST" })
   })
   .handler(async ({ data, context }) => {
     await requireMod(context.supabase, context.userId);
-    const { error } = await context.supabase.from("community_games").insert({
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("community_games").insert({
       author_id: context.userId,
       game_type: data.type,
       title: data.title,
@@ -132,7 +134,8 @@ export const submitCommunityGame = createServerFn({ method: "POST" })
 export const listMyGames = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
       .from("community_games")
       .select("id, game_type, title, status, reject_reason, created_at, reviewed_at")
       .eq("author_id", context.userId)
