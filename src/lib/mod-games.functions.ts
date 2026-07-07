@@ -5,8 +5,9 @@ type GameType = "crossword" | "quiz" | "math_sprint";
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
-async function requireMod(supabase: any, userId: string) {
-  const { data } = await supabase
+async function requireMod(_supabase: unknown, userId: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
     .from("user_roles")
     .select("role")
     .eq("user_id", userId);
