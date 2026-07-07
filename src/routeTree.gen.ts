@@ -26,6 +26,7 @@ import { Route as GamesSlidingPuzzleRouteImport } from './routes/games/sliding-p
 import { Route as GamesMemoryRouteImport } from './routes/games/memory'
 import { Route as GamesHangmanRouteImport } from './routes/games/hangman'
 import { Route as Games2048RouteImport } from './routes/games/2048'
+import { Route as CommunityIdRouteImport } from './routes/community.$id'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedModeratorRouteImport } from './routes/_authenticated/moderator'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -116,6 +117,11 @@ const Games2048Route = Games2048RouteImport.update({
   path: '/games/2048',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommunityIdRoute = CommunityIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => CommunityRoute,
+} as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -148,10 +154,11 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
-  '/community': typeof CommunityRoute
+  '/community': typeof CommunityRouteWithChildren
   '/leaderboard': typeof LeaderboardRoute
   '/moderator': typeof AuthenticatedModeratorRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/community/$id': typeof CommunityIdRoute
   '/games/2048': typeof Games2048Route
   '/games/hangman': typeof GamesHangmanRoute
   '/games/memory': typeof GamesMemoryRoute
@@ -171,10 +178,11 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
-  '/community': typeof CommunityRoute
+  '/community': typeof CommunityRouteWithChildren
   '/leaderboard': typeof LeaderboardRoute
   '/moderator': typeof AuthenticatedModeratorRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/community/$id': typeof CommunityIdRoute
   '/games/2048': typeof Games2048Route
   '/games/hangman': typeof GamesHangmanRoute
   '/games/memory': typeof GamesMemoryRoute
@@ -196,10 +204,11 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
-  '/community': typeof CommunityRoute
+  '/community': typeof CommunityRouteWithChildren
   '/leaderboard': typeof LeaderboardRoute
   '/_authenticated/moderator': typeof AuthenticatedModeratorRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/community/$id': typeof CommunityIdRoute
   '/games/2048': typeof Games2048Route
   '/games/hangman': typeof GamesHangmanRoute
   '/games/memory': typeof GamesMemoryRoute
@@ -225,6 +234,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/moderator'
     | '/profile'
+    | '/community/$id'
     | '/games/2048'
     | '/games/hangman'
     | '/games/memory'
@@ -248,6 +258,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/moderator'
     | '/profile'
+    | '/community/$id'
     | '/games/2048'
     | '/games/hangman'
     | '/games/memory'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/_authenticated/moderator'
     | '/_authenticated/profile'
+    | '/community/$id'
     | '/games/2048'
     | '/games/hangman'
     | '/games/memory'
@@ -293,7 +305,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
-  CommunityRoute: typeof CommunityRoute
+  CommunityRoute: typeof CommunityRouteWithChildren
   LeaderboardRoute: typeof LeaderboardRoute
   Games2048Route: typeof Games2048Route
   GamesHangmanRoute: typeof GamesHangmanRoute
@@ -431,6 +443,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Games2048RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/community/$id': {
+      id: '/community/$id'
+      path: '/$id'
+      fullPath: '/community/$id'
+      preLoaderRoute: typeof CommunityIdRouteImport
+      parentRoute: typeof CommunityRoute
+    }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
       path: '/profile'
@@ -482,13 +501,25 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface CommunityRouteChildren {
+  CommunityIdRoute: typeof CommunityIdRoute
+}
+
+const CommunityRouteChildren: CommunityRouteChildren = {
+  CommunityIdRoute: CommunityIdRoute,
+}
+
+const CommunityRouteWithChildren = CommunityRoute._addFileChildren(
+  CommunityRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
-  CommunityRoute: CommunityRoute,
+  CommunityRoute: CommunityRouteWithChildren,
   LeaderboardRoute: LeaderboardRoute,
   Games2048Route: Games2048Route,
   GamesHangmanRoute: GamesHangmanRoute,

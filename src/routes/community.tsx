@@ -90,9 +90,11 @@ function CommunityPage() {
                 };
                 const Icon = meta.icon;
                 return (
-                  <div
+                  <Link
                     key={g.id}
-                    className="bg-surface-800 border border-white/5 rounded-2xl p-5 hover:border-brand-primary/40 transition-colors"
+                    to="/community/$id"
+                    params={{ id: g.id }}
+                    className="bg-surface-800 border border-white/5 rounded-2xl p-5 hover:border-brand-primary/40 transition-colors block"
                   >
                     <div className="flex items-center gap-2 mb-3">
                       <Icon className={`size-4 ${meta.accent}`} />
@@ -107,7 +109,7 @@ function CommunityPage() {
                       </p>
                     )}
                     <p className="text-xs text-slate-500">от {g.author_name}</p>
-                  </div>
+                  </Link>
                 );
               })}
             </div>
