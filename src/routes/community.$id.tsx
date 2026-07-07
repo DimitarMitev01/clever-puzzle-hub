@@ -5,7 +5,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { getApprovedCommunityGame } from "@/lib/community.functions";
-import { ArrowLeft, CheckCircle2, XCircle, HelpCircle, Puzzle, Calculator, Sparkles, RotateCcw } from "lucide-react";
+import { layoutCrossword, type Layout } from "@/lib/crossword-layout";
+import { ArrowLeft, CheckCircle2, XCircle, HelpCircle, Puzzle, Calculator, Sparkles, RotateCcw, Eye } from "lucide-react";
 
 export const Route = createFileRoute("/community/$id")({
   ssr: false,
