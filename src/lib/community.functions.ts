@@ -110,6 +110,34 @@ export const listApprovedCommunityGames = createServerFn({ method: "GET" }).hand
   return (data ?? []).map((g) => ({ ...g, author_name: nameMap[g.author_id] ?? "Модератор" }));
 });
 
+export const getApprovedCommunityGame = createServerFn({ method: "GET" })
+  .inputValidator((d: unknown) => {
+    const r = (d ?? {}) as Record<string, unknown>;
+    const id = String(r.id ?? "");
+    if (!id) throw new Error("Missing id");
+    return { id };
+  })
+  .handler(async ({ data }) => {
+    const admin = await loadAdmin();
+    const { data: g, error } = await admin
+      .from("community_games")
+      .select("id, game_type, title, description, topic, author_id, content, created_at, status")
+      .eq("id", data.id)
+      .eq("status", "approved")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!g) throw new Error("Играта не е намерена");
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("display_name, username")
+      .eq("id", g.author_id)
+      .maybeSingle();
+    return {
+      ...g,
+      author_name: profile?.display_name || profile?.username || "Модератор",
+    };
+  });
+
 // ---------- Admin: moderator requests ----------
 
 export const adminListModRequests = createServerFn({ method: "GET" }).handler(async () => {
