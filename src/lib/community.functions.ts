@@ -69,9 +69,10 @@ export const requestModeratorAccess = createServerFn({ method: "POST" })
     return { message };
   })
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+    const { userId } = context;
+    const admin = await loadAdmin();
     // Block duplicate pending
-    const { data: existing } = await supabase
+    const { data: existing } = await admin
       .from("moderator_requests")
       .select("id")
       .eq("user_id", userId)
@@ -80,7 +81,7 @@ export const requestModeratorAccess = createServerFn({ method: "POST" })
     if (existing) {
       return { ok: false as const, reason: "already_pending" };
     }
-    const { error } = await supabase
+    const { error } = await admin
       .from("moderator_requests")
       .insert({ user_id: userId, message: data.message || null });
     if (error) throw new Error(error.message);
