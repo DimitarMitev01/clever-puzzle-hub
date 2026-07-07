@@ -190,7 +190,7 @@ function QuizPlayer({ content }: { content: Record<string, unknown> }) {
   );
 }
 
-// ---------- Crossword (word list reveal) ----------
+// ---------- Crossword (interactive grid) ----------
 
 type CwWord = { word: string; clue: string };
 
@@ -198,72 +198,289 @@ function CrosswordPlayer({ content }: { content: Record<string, unknown> }) {
   const words = useMemo<CwWord[]>(() => {
     const raw = Array.isArray(content.words) ? content.words : [];
     return raw.map((w: any) => ({
-      word: String(w?.word ?? "").toUpperCase(),
+      word: String(w?.word ?? "").toUpperCase().replace(/\s+/g, ""),
       clue: String(w?.clue ?? ""),
     }));
   }, [content]);
 
-  const [guesses, setGuesses] = useState<Record<number, string>>({});
-  const [revealed, setRevealed] = useState<Record<number, boolean>>({});
+  const layout = useMemo<Layout>(() => layoutCrossword(words), [words]);
 
-  if (words.length === 0) return <EmptyGame />;
+  const [letters, setLetters] = useState<Record<string, string>>({});
+  const [selected, setSelected] = useState<{ row: number; col: number; dir: "across" | "down" } | null>(null);
+  const [revealed, setRevealed] = useState(false);
+  const [checked, setChecked] = useState(false);
+  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  if (words.length === 0 || layout.placements.length === 0) return <EmptyGame />;
+
+  const across = layout.placements.filter((p) => p.dir === "across").sort((a, b) => a.number - b.number);
+  const down = layout.placements.filter((p) => p.dir === "down").sort((a, b) => a.number - b.number);
+  const dropped = words.length - layout.placements.length;
+
+  const activePlacementIdx =
+    selected == null
+      ? null
+      : selected.dir === "across"
+        ? layout.grid[selected.row]?.[selected.col]?.across ?? null
+        : layout.grid[selected.row]?.[selected.col]?.down ?? null;
+
+  function cellKey(r: number, c: number) {
+    return `${r},${c}`;
+  }
+
+  function focusCell(r: number, c: number) {
+    const el = inputRefs.current[cellKey(r, c)];
+    if (el) el.focus();
+  }
+
+  function handleType(r: number, c: number, val: string) {
+    const ch = val.toUpperCase().replace(/[^А-Я A-Z]/g, "").slice(-1);
+    setLetters((p) => ({ ...p, [cellKey(r, c)]: ch }));
+    setChecked(false);
+    // Auto-advance in current direction
+    if (!ch || !selected) return;
+    const dir = selected.dir;
+    const nr = dir === "across" ? r : r + 1;
+    const nc = dir === "across" ? c + 1 : c;
+    if (layout.grid[nr]?.[nc]) focusCell(nr, nc);
+  }
+
+  function handleKey(e: React.KeyboardEvent<HTMLInputElement>, r: number, c: number) {
+    const dir = selected?.dir ?? "across";
+    if (e.key === "Backspace" && !letters[cellKey(r, c)]) {
+      const pr = dir === "across" ? r : r - 1;
+      const pc = dir === "across" ? c - 1 : c;
+      if (layout.grid[pr]?.[pc]) focusCell(pr, pc);
+    } else if (e.key === "ArrowRight") {
+      if (layout.grid[r]?.[c + 1]) { setSelected({ row: r, col: c + 1, dir: "across" }); focusCell(r, c + 1); }
+    } else if (e.key === "ArrowLeft") {
+      if (layout.grid[r]?.[c - 1]) { setSelected({ row: r, col: c - 1, dir: "across" }); focusCell(r, c - 1); }
+    } else if (e.key === "ArrowDown") {
+      if (layout.grid[r + 1]?.[c]) { setSelected({ row: r + 1, col: c, dir: "down" }); focusCell(r + 1, c); }
+    } else if (e.key === "ArrowUp") {
+      if (layout.grid[r - 1]?.[c]) { setSelected({ row: r - 1, col: c, dir: "down" }); focusCell(r - 1, c); }
+    } else if (e.key === " ") {
+      e.preventDefault();
+      setSelected((s) => (s ? { ...s, dir: s.dir === "across" ? "down" : "across" } : s));
+    }
+  }
+
+  function cellClick(r: number, c: number) {
+    const cell = layout.grid[r][c]!;
+    // If already selected here, toggle direction; otherwise pick a direction that exists at this cell
+    if (selected && selected.row === r && selected.col === c) {
+      const other = selected.dir === "across" ? "down" : "across";
+      if ((other === "across" && cell.across != null) || (other === "down" && cell.down != null)) {
+        setSelected({ row: r, col: c, dir: other });
+      }
+    } else {
+      const dir = cell.across != null ? "across" : "down";
+      setSelected({ row: r, col: c, dir });
+    }
+    focusCell(r, c);
+  }
+
+  function checkAll() {
+    setChecked(true);
+  }
+
+  function revealAll() {
+    const full: Record<string, string> = {};
+    for (let r = 0; r < layout.rows; r++) {
+      for (let c = 0; c < layout.cols; c++) {
+        const cell = layout.grid[r][c];
+        if (cell) full[cellKey(r, c)] = cell.letter;
+      }
+    }
+    setLetters(full);
+    setRevealed(true);
+    setChecked(true);
+  }
+
+  function reset() {
+    setLetters({});
+    setChecked(false);
+    setRevealed(false);
+    setSelected(null);
+  }
+
+  // Count solved cells
+  let filled = 0;
+  let correct = 0;
+  let total = 0;
+  for (let r = 0; r < layout.rows; r++) {
+    for (let c = 0; c < layout.cols; c++) {
+      const cell = layout.grid[r][c];
+      if (!cell) continue;
+      total++;
+      const v = letters[cellKey(r, c)] ?? "";
+      if (v) filled++;
+      if (v === cell.letter) correct++;
+    }
+  }
+  const allCorrect = correct === total;
 
   return (
-    <div className="bg-surface-800 border border-white/5 rounded-2xl p-6 space-y-3">
-      <p className="text-sm text-slate-400 mb-2">
-        Познай думата по подсказката. Всяко квадратче е една буква.
-      </p>
-      {words.map((w, i) => {
-        const guess = (guesses[i] ?? "").toUpperCase();
-        const correct = guess === w.word;
-        const show = revealed[i];
-        return (
-          <div key={i} className="border border-white/10 rounded-xl p-4">
-            <p className="text-sm text-slate-300 mb-2">
-              <span className="font-mono text-slate-500 mr-2">{i + 1}.</span>
-              {w.clue}
-              <span className="ml-2 text-xs text-slate-600 font-mono">
-                ({w.word.length} букви)
-              </span>
-            </p>
-            <div className="flex items-center gap-2 flex-wrap">
-              <input
-                value={guess}
-                onChange={(e) =>
-                  setGuesses((p) => ({
-                    ...p,
-                    [i]: e.target.value.toUpperCase().replace(/\s+/g, "").slice(0, w.word.length),
-                  }))
-                }
-                disabled={show}
-                placeholder="Твоят отговор"
-                className={`px-3 py-2 rounded-lg bg-surface-900 border text-white font-mono tracking-widest text-sm focus:outline-none ${
-                  show
-                    ? "border-white/10 text-slate-400"
-                    : correct
-                      ? "border-emerald-500/60 text-emerald-200"
-                      : "border-white/10 focus:border-brand-primary"
-                }`}
-              />
-              {show ? (
-                <span className="font-mono text-brand-secondary text-sm">{w.word}</span>
-              ) : correct ? (
-                <CheckCircle2 className="size-5 text-emerald-400" />
-              ) : (
-                <button
-                  onClick={() => setRevealed((p) => ({ ...p, [i]: true }))}
-                  className="text-xs text-slate-500 hover:text-slate-300 underline"
+    <div className="space-y-6">
+      {dropped > 0 && (
+        <div className="text-xs text-slate-500 bg-surface-800 border border-white/5 rounded-lg px-3 py-2">
+          Забележка: {dropped} {dropped === 1 ? "дума" : "думи"} не се вписват в решетката и са пропуснати.
+        </div>
+      )}
+
+      <div className="bg-surface-800 border border-white/5 rounded-2xl p-4 sm:p-6 overflow-auto">
+        <div
+          className="grid mx-auto"
+          style={{
+            gridTemplateColumns: `repeat(${layout.cols}, minmax(0, 1fr))`,
+            width: `min(100%, ${layout.cols * 40}px)`,
+          }}
+        >
+          {Array.from({ length: layout.rows }).map((_, r) =>
+            Array.from({ length: layout.cols }).map((_, c) => {
+              const cell = layout.grid[r][c];
+              if (!cell) return <div key={`${r}-${c}`} className="aspect-square" />;
+
+              const key = cellKey(r, c);
+              const val = letters[key] ?? "";
+              const isSelected = selected?.row === r && selected?.col === c;
+              const inActiveWord =
+                activePlacementIdx != null &&
+                (cell.across === activePlacementIdx || cell.down === activePlacementIdx);
+              const wrong = checked && val && val !== cell.letter;
+
+              return (
+                <div
+                  key={`${r}-${c}`}
+                  className={`aspect-square relative border ${
+                    isSelected
+                      ? "border-brand-primary bg-brand-primary/20"
+                      : inActiveWord
+                        ? "border-white/20 bg-brand-primary/5"
+                        : "border-white/10 bg-surface-900"
+                  }`}
                 >
-                  покажи
-                </button>
-              )}
-            </div>
+                  {cell.number != null && (
+                    <span className="absolute top-0 left-0.5 text-[9px] font-mono text-slate-500 leading-none pt-0.5 pointer-events-none">
+                      {cell.number}
+                    </span>
+                  )}
+                  <input
+                    ref={(el) => {
+                      inputRefs.current[key] = el;
+                    }}
+                    value={val}
+                    onChange={(e) => handleType(r, c, e.target.value)}
+                    onKeyDown={(e) => handleKey(e, r, c)}
+                    onFocus={() => cellClick(r, c)}
+                    onClick={() => cellClick(r, c)}
+                    maxLength={2}
+                    className={`w-full h-full bg-transparent text-center font-mono font-bold uppercase text-sm sm:text-base focus:outline-none ${
+                      wrong ? "text-red-400" : checked && val ? "text-emerald-300" : "text-white"
+                    }`}
+                  />
+                </div>
+              );
+            }),
+          )}
+        </div>
+
+        <div className="flex items-center justify-between mt-4 gap-2 flex-wrap">
+          <p className="text-xs font-mono text-slate-500">
+            {filled}/{total} букви{checked ? ` · ${correct} верни` : ""}
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={reset}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-900 border border-white/10 text-xs text-slate-300 hover:border-white/20"
+            >
+              <RotateCcw className="size-3.5" /> Изчисти
+            </button>
+            <button
+              onClick={revealAll}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-900 border border-white/10 text-xs text-slate-300 hover:border-white/20"
+            >
+              <Eye className="size-3.5" /> Покажи
+            </button>
+            <button
+              onClick={checkAll}
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-brand-primary text-white text-xs font-bold hover:bg-brand-primary/90"
+            >
+              <CheckCircle2 className="size-3.5" /> Провери
+            </button>
           </div>
-        );
-      })}
+        </div>
+
+        {checked && !revealed && (
+          <p
+            className={`mt-3 text-sm font-bold text-center ${
+              allCorrect ? "text-emerald-400" : "text-amber-400"
+            }`}
+          >
+            {allCorrect
+              ? "Браво! Всички думи са верни."
+              : `Има ${total - correct} неверни или празни клетки.`}
+          </p>
+        )}
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <ClueList title="Хоризонтално" list={across} activeIdx={activePlacementIdx} placements={layout.placements} onPick={(p) => { setSelected({ row: p.row, col: p.col, dir: p.dir }); focusCell(p.row, p.col); }} />
+        <ClueList title="Вертикално" list={down} activeIdx={activePlacementIdx} placements={layout.placements} onPick={(p) => { setSelected({ row: p.row, col: p.col, dir: p.dir }); focusCell(p.row, p.col); }} />
+      </div>
     </div>
   );
 }
+
+function ClueList({
+  title,
+  list,
+  activeIdx,
+  placements,
+  onPick,
+}: {
+  title: string;
+  list: Layout["placements"];
+  activeIdx: number | null;
+  placements: Layout["placements"];
+  onPick: (p: Layout["placements"][number]) => void;
+}) {
+  return (
+    <div className="bg-surface-800 border border-white/5 rounded-2xl p-5">
+      <h3 className="text-xs font-mono uppercase tracking-widest text-brand-secondary mb-3">
+        {title}
+      </h3>
+      <ul className="space-y-1.5">
+        {list.map((p) => {
+          const idx = placements.indexOf(p);
+          const active = idx === activeIdx;
+          return (
+            <li key={`${p.dir}-${p.number}`}>
+              <button
+                onClick={() => onPick(p)}
+                className={`text-left w-full text-sm rounded px-2 py-1 transition-colors ${
+                  active
+                    ? "bg-brand-primary/15 text-white"
+                    : "text-slate-300 hover:bg-white/5"
+                }`}
+              >
+                <span className="font-mono text-slate-500 mr-2">{p.number}.</span>
+                {p.clue}
+                <span className="ml-2 text-xs text-slate-600 font-mono">
+                  ({p.word.length})
+                </span>
+              </button>
+            </li>
+          );
+        })}
+        {list.length === 0 && (
+          <li className="text-xs text-slate-600">Няма думи.</li>
+        )}
+      </ul>
+    </div>
+  );
+}
+
 
 // ---------- Math Sprint ----------
 
