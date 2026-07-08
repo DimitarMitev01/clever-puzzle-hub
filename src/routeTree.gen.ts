@@ -16,6 +16,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CommunityIndexRouteImport } from './routes/community.index'
 import { Route as GamesWordleRouteImport } from './routes/games/wordle'
 import { Route as GamesWordSearchRouteImport } from './routes/games/word-search'
 import { Route as GamesTicTacToeRouteImport } from './routes/games/tic-tac-toe'
@@ -66,6 +67,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityIndexRoute = CommunityIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CommunityRoute,
 } as any)
 const GamesWordleRoute = GamesWordleRouteImport.update({
   id: '/games/wordle',
@@ -169,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
   '/games/word-search': typeof GamesWordSearchRoute
   '/games/wordle': typeof GamesWordleRoute
+  '/community/': typeof CommunityIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -178,7 +185,6 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
-  '/community': typeof CommunityRouteWithChildren
   '/leaderboard': typeof LeaderboardRoute
   '/moderator': typeof AuthenticatedModeratorRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -193,6 +199,7 @@ export interface FileRoutesByTo {
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
   '/games/word-search': typeof GamesWordSearchRoute
   '/games/wordle': typeof GamesWordleRoute
+  '/community': typeof CommunityIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -219,6 +226,7 @@ export interface FileRoutesById {
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
   '/games/word-search': typeof GamesWordSearchRoute
   '/games/wordle': typeof GamesWordleRoute
+  '/community/': typeof CommunityIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -245,6 +253,7 @@ export interface FileRouteTypes {
     | '/games/tic-tac-toe'
     | '/games/word-search'
     | '/games/wordle'
+    | '/community/'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -254,7 +263,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/auth'
-    | '/community'
     | '/leaderboard'
     | '/moderator'
     | '/profile'
@@ -269,6 +277,7 @@ export interface FileRouteTypes {
     | '/games/tic-tac-toe'
     | '/games/word-search'
     | '/games/wordle'
+    | '/community'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -294,6 +303,7 @@ export interface FileRouteTypes {
     | '/games/tic-tac-toe'
     | '/games/word-search'
     | '/games/wordle'
+    | '/community/'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -372,6 +382,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/community/': {
+      id: '/community/'
+      path: '/'
+      fullPath: '/community/'
+      preLoaderRoute: typeof CommunityIndexRouteImport
+      parentRoute: typeof CommunityRoute
     }
     '/games/wordle': {
       id: '/games/wordle'
@@ -503,10 +520,12 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface CommunityRouteChildren {
   CommunityIdRoute: typeof CommunityIdRoute
+  CommunityIndexRoute: typeof CommunityIndexRoute
 }
 
 const CommunityRouteChildren: CommunityRouteChildren = {
   CommunityIdRoute: CommunityIdRoute,
+  CommunityIndexRoute: CommunityIndexRoute,
 }
 
 const CommunityRouteWithChildren = CommunityRoute._addFileChildren(
