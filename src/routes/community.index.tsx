@@ -13,7 +13,7 @@ import {
 import { toast } from "sonner";
 import { Users, Sparkles, Puzzle, HelpCircle, Calculator, Clock, CheckCircle2, XCircle } from "lucide-react";
 
-export const Route = createFileRoute("/community")({
+export const Route = createFileRoute("/community/")({
   ssr: false,
   head: () => ({
     meta: [

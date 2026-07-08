@@ -10,12 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
-import { Route as CommunityRouteImport } from './routes/community'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CommunityIndexRouteImport } from './routes/community.index'
 import { Route as GamesWordleRouteImport } from './routes/games/wordle'
 import { Route as GamesWordSearchRouteImport } from './routes/games/word-search'
 import { Route as GamesTicTacToeRouteImport } from './routes/games/tic-tac-toe'
@@ -36,11 +36,6 @@ import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/em
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CommunityRoute = CommunityRouteImport.update({
-  id: '/community',
-  path: '/community',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -65,6 +60,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityIndexRoute = CommunityIndexRouteImport.update({
+  id: '/community/',
+  path: '/community/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GamesWordleRoute = GamesWordleRouteImport.update({
@@ -118,9 +118,9 @@ const Games2048Route = Games2048RouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const CommunityIdRoute = CommunityIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => CommunityRoute,
+  id: '/community/$id',
+  path: '/community/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
@@ -154,7 +154,6 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
-  '/community': typeof CommunityRouteWithChildren
   '/leaderboard': typeof LeaderboardRoute
   '/moderator': typeof AuthenticatedModeratorRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -169,6 +168,7 @@ export interface FileRoutesByFullPath {
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
   '/games/word-search': typeof GamesWordSearchRoute
   '/games/wordle': typeof GamesWordleRoute
+  '/community/': typeof CommunityIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -178,7 +178,6 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
-  '/community': typeof CommunityRouteWithChildren
   '/leaderboard': typeof LeaderboardRoute
   '/moderator': typeof AuthenticatedModeratorRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -193,6 +192,7 @@ export interface FileRoutesByTo {
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
   '/games/word-search': typeof GamesWordSearchRoute
   '/games/wordle': typeof GamesWordleRoute
+  '/community': typeof CommunityIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -204,7 +204,6 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
-  '/community': typeof CommunityRouteWithChildren
   '/leaderboard': typeof LeaderboardRoute
   '/_authenticated/moderator': typeof AuthenticatedModeratorRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
@@ -219,6 +218,7 @@ export interface FileRoutesById {
   '/games/tic-tac-toe': typeof GamesTicTacToeRoute
   '/games/word-search': typeof GamesWordSearchRoute
   '/games/wordle': typeof GamesWordleRoute
+  '/community/': typeof CommunityIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -230,7 +230,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/auth'
-    | '/community'
     | '/leaderboard'
     | '/moderator'
     | '/profile'
@@ -245,6 +244,7 @@ export interface FileRouteTypes {
     | '/games/tic-tac-toe'
     | '/games/word-search'
     | '/games/wordle'
+    | '/community/'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -254,7 +254,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/auth'
-    | '/community'
     | '/leaderboard'
     | '/moderator'
     | '/profile'
@@ -269,6 +268,7 @@ export interface FileRouteTypes {
     | '/games/tic-tac-toe'
     | '/games/word-search'
     | '/games/wordle'
+    | '/community'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -279,7 +279,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/auth'
-    | '/community'
     | '/leaderboard'
     | '/_authenticated/moderator'
     | '/_authenticated/profile'
@@ -294,6 +293,7 @@ export interface FileRouteTypes {
     | '/games/tic-tac-toe'
     | '/games/word-search'
     | '/games/wordle'
+    | '/community/'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -305,8 +305,8 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
-  CommunityRoute: typeof CommunityRouteWithChildren
   LeaderboardRoute: typeof LeaderboardRoute
+  CommunityIdRoute: typeof CommunityIdRoute
   Games2048Route: typeof Games2048Route
   GamesHangmanRoute: typeof GamesHangmanRoute
   GamesMemoryRoute: typeof GamesMemoryRoute
@@ -317,6 +317,7 @@ export interface RootRouteChildren {
   GamesTicTacToeRoute: typeof GamesTicTacToeRoute
   GamesWordSearchRoute: typeof GamesWordSearchRoute
   GamesWordleRoute: typeof GamesWordleRoute
+  CommunityIndexRoute: typeof CommunityIndexRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -329,13 +330,6 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof LeaderboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/community': {
-      id: '/community'
-      path: '/community'
-      fullPath: '/community'
-      preLoaderRoute: typeof CommunityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -371,6 +365,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community/': {
+      id: '/community/'
+      path: '/community'
+      fullPath: '/community/'
+      preLoaderRoute: typeof CommunityIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/games/wordle': {
@@ -445,10 +446,10 @@ declare module '@tanstack/react-router' {
     }
     '/community/$id': {
       id: '/community/$id'
-      path: '/$id'
+      path: '/community/$id'
       fullPath: '/community/$id'
       preLoaderRoute: typeof CommunityIdRouteImport
-      parentRoute: typeof CommunityRoute
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
@@ -501,26 +502,14 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface CommunityRouteChildren {
-  CommunityIdRoute: typeof CommunityIdRoute
-}
-
-const CommunityRouteChildren: CommunityRouteChildren = {
-  CommunityIdRoute: CommunityIdRoute,
-}
-
-const CommunityRouteWithChildren = CommunityRoute._addFileChildren(
-  CommunityRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
-  CommunityRoute: CommunityRouteWithChildren,
   LeaderboardRoute: LeaderboardRoute,
+  CommunityIdRoute: CommunityIdRoute,
   Games2048Route: Games2048Route,
   GamesHangmanRoute: GamesHangmanRoute,
   GamesMemoryRoute: GamesMemoryRoute,
@@ -531,6 +520,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesTicTacToeRoute: GamesTicTacToeRoute,
   GamesWordSearchRoute: GamesWordSearchRoute,
   GamesWordleRoute: GamesWordleRoute,
+  CommunityIndexRoute: CommunityIndexRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
