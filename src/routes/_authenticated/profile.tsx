@@ -58,6 +58,36 @@ function ProfilePage() {
   const profile = profileQuery.data;
   const displayName = profile?.display_name || profile?.username || user.email?.split("@")[0] || "Играч";
 
+  const [editing, setEditing] = useState(false);
+  const [nameInput, setNameInput] = useState(displayName);
+
+  useEffect(() => {
+    if (!editing) setNameInput(displayName);
+  }, [displayName, editing]);
+
+  const updateName = useMutation({
+    mutationFn: async (newName: string) => {
+      const trimmed = newName.trim();
+      if (trimmed.length < 2 || trimmed.length > 40) {
+        throw new Error("Името трябва да е между 2 и 40 символа");
+      }
+      const { error } = await supabase
+        .from("profiles")
+        .update({ display_name: trimmed })
+        .eq("id", user.id);
+      if (error) throw error;
+      return trimmed;
+    },
+    onSuccess: () => {
+      toast.success("Името е обновено");
+      setEditing(false);
+      queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
+    },
+    onError: (err: unknown) => {
+      toast.error(err instanceof Error ? err.message : "Грешка при запис");
+    },
+  });
+
   return (
     <div className="min-h-screen bg-surface-900 text-slate-100">
       <Header />
@@ -68,12 +98,61 @@ function ProfilePage() {
           <div className="size-20 rounded-2xl bg-surface-700 border border-white/10 flex items-center justify-center">
             <UserIcon className="size-10 text-slate-300" />
           </div>
-          <div className="flex-1">
+          <div className="flex-1 w-full">
             <p className="text-xs font-mono text-brand-secondary uppercase tracking-widest mb-1">Профил</p>
-            <h1 className="text-3xl font-bold text-white">{displayName}</h1>
+            {editing ? (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  updateName.mutate(nameInput);
+                }}
+                className="flex flex-wrap items-center gap-2"
+              >
+                <input
+                  autoFocus
+                  value={nameInput}
+                  onChange={(e) => setNameInput(e.target.value)}
+                  maxLength={40}
+                  className="flex-1 min-w-[200px] px-3 py-2 rounded-lg bg-surface-900 border border-white/10 text-white text-xl font-bold focus:border-brand-primary focus:outline-none"
+                  placeholder="Твоето име"
+                />
+                <button
+                  type="submit"
+                  disabled={updateName.isPending}
+                  className="p-2 rounded-lg bg-brand-primary text-white hover:bg-brand-primary/90 disabled:opacity-50"
+                  aria-label="Запази"
+                  title="Запази"
+                >
+                  <Check className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditing(false)}
+                  className="p-2 rounded-lg bg-surface-700 text-slate-300 hover:bg-surface-600"
+                  aria-label="Отказ"
+                  title="Отказ"
+                >
+                  <X className="size-4" />
+                </button>
+              </form>
+            ) : (
+              <div className="flex items-center gap-2">
+                <h1 className="text-3xl font-bold text-white">{displayName}</h1>
+                <button
+                  type="button"
+                  onClick={() => setEditing(true)}
+                  className="p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+                  aria-label="Промени името"
+                  title="Промени името"
+                >
+                  <Pencil className="size-4" />
+                </button>
+              </div>
+            )}
             <p className="text-slate-400 text-sm mt-1">{user.email}</p>
           </div>
         </div>
+
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
