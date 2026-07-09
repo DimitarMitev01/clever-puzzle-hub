@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { GAMES, getGame } from "@/lib/games";
-import { User as UserIcon, Trophy, Clock, Gamepad2 } from "lucide-react";
+import { User as UserIcon, Trophy, Clock, Gamepad2, Pencil, Check, X } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
@@ -12,6 +14,7 @@ export const Route = createFileRoute("/_authenticated/profile")({
   }),
   component: ProfilePage,
 });
+
 
 function ProfilePage() {
   const { user } = Route.useRouteContext();
