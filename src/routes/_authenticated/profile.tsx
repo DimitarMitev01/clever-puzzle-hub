@@ -71,22 +71,45 @@ function ProfilePage() {
       if (trimmed.length < 2 || trimmed.length > 40) {
         throw new Error("Името трябва да е между 2 и 40 символа");
       }
-      const { error } = await supabase
+      if (trimmed.toLowerCase() === (profile?.display_name ?? "").toLowerCase()) {
+        return trimmed;
+      }
+      // Pre-check for duplicates (case-insensitive)
+      const { data: existing, error: checkError } = await supabase
+        .from("profiles")
+        .select("id")
+        .ilike("display_name", trimmed)
+        .neq("id", user.id)
+        .maybeSingle();
+      if (checkError) throw checkError;
+      if (existing) throw new Error("Това име вече е заето. Избери друго.");
+
+      const { data, error } = await supabase
         .from("profiles")
         .update({ display_name: trimmed })
-        .eq("id", user.id);
-      if (error) throw error;
-      return trimmed;
+        .eq("id", user.id)
+        .select()
+        .maybeSingle();
+      if (error) {
+        if (error.code === "23505") throw new Error("Това име вече е заето. Избери друго.");
+        throw error;
+      }
+      if (!data) throw new Error("Промяната не беше запазена. Опитай отново.");
+      return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success("Името е обновено");
       setEditing(false);
+      if (typeof data === "object") {
+        queryClient.setQueryData(["profile", user.id], data);
+      }
       queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
     },
     onError: (err: unknown) => {
       toast.error(err instanceof Error ? err.message : "Грешка при запис");
     },
   });
+
 
   return (
     <div className="min-h-screen bg-surface-900 text-slate-100">
