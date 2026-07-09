@@ -18,6 +18,8 @@ export const Route = createFileRoute("/_authenticated/profile")({
 
 function ProfilePage() {
   const { user } = Route.useRouteContext();
+  const queryClient = useQueryClient();
+
 
   const profileQuery = useQuery({
     queryKey: ["profile", user.id],
