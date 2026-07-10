@@ -21,13 +21,23 @@ function Leaderboard() {
   const query = useQuery({
     queryKey: ["leaderboard", gameSlug],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data: scores } = await supabase
         .from("game_scores")
-        .select("id, score, duration_seconds, user_id, created_at, profiles(display_name, username)")
+        .select("id, score, duration_seconds, user_id, created_at")
         .eq("game_slug", gameSlug)
         .order("score", { ascending: false })
         .limit(20);
-      return data ?? [];
+      const rows = scores ?? [];
+      const userIds = Array.from(new Set(rows.map((r) => r.user_id)));
+      const profileMap: Record<string, { display_name: string | null; username: string | null }> = {};
+      if (userIds.length) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, display_name, username")
+          .in("id", userIds);
+        for (const p of profiles ?? []) profileMap[p.id] = { display_name: p.display_name, username: p.username };
+      }
+      return rows.map((r) => ({ ...r, profiles: profileMap[r.user_id] ?? null }));
     },
   });
 
