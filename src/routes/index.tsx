@@ -48,12 +48,14 @@ function Index() {
                 >
                   Разгледай игрите
                 </a>
-                <Link
-                  to="/auth"
-                  className="px-7 py-3 bg-surface-800/80 text-white font-bold rounded-xl border border-white/10 hover:border-brand-primary/50 transition-all"
-                >
-                  Създай профил
-                </Link>
+                {!user && (
+                  <Link
+                    to="/auth"
+                    className="px-7 py-3 bg-surface-800/80 text-white font-bold rounded-xl border border-white/10 hover:border-brand-primary/50 transition-all"
+                  >
+                    Създай профил
+                  </Link>
+                )}
               </div>
             </div>
             <div className="absolute -right-16 -bottom-16 size-80 rounded-full bg-brand-primary/20 blur-3xl pointer-events-none" />
