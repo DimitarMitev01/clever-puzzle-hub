@@ -113,7 +113,10 @@ function SnakeGame() {
         w: "up", s: "down", a: "left", d: "right",
       };
       const nd = map[e.key];
-      if (nd) changeDir(nd);
+      if (nd) {
+        e.preventDefault();
+        changeDir(nd);
+      }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -121,6 +124,37 @@ function SnakeGame() {
 
   const boardRef = useRef<HTMLDivElement>(null);
   useSwipe(boardRef, changeDir);
+
+  // Center the board and lock scrolling while the game is active
+  useEffect(() => {
+    if (!running) return;
+
+    boardRef.current?.scrollIntoView({ block: "center", inline: "center", behavior: "auto" });
+
+    const scrollY = window.scrollY;
+    const originalStyle = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+      touchAction: document.body.style.touchAction,
+    };
+
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+    document.body.style.touchAction = "none";
+
+    return () => {
+      document.body.style.overflow = originalStyle.overflow;
+      document.body.style.position = originalStyle.position;
+      document.body.style.top = originalStyle.top;
+      document.body.style.width = originalStyle.width;
+      document.body.style.touchAction = originalStyle.touchAction;
+      window.scrollTo({ top: scrollY, behavior: "auto" });
+    };
+  }, [running]);
 
 
 
