@@ -25,8 +25,9 @@ function Leaderboard() {
         .from("game_scores")
         .select("id, score, duration_seconds, user_id, created_at")
         .eq("game_slug", gameSlug)
+        .gt("score", 0)
         .order("score", { ascending: false })
-        .limit(20);
+        .limit(50);
       const rows = scores ?? [];
       const userIds = Array.from(new Set(rows.map((r) => r.user_id)));
       const profileMap: Record<string, { display_name: string | null; username: string | null }> = {};
@@ -37,7 +38,10 @@ function Leaderboard() {
           .in("id", userIds);
         for (const p of profiles ?? []) profileMap[p.id] = { display_name: p.display_name, username: p.username };
       }
-      return rows.map((r) => ({ ...r, profiles: profileMap[r.user_id] ?? null }));
+      return rows
+        .filter((r) => profileMap[r.user_id])
+        .map((r) => ({ ...r, profiles: profileMap[r.user_id] }))
+        .slice(0, 20);
     },
   });
 
