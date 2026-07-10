@@ -20,6 +20,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { user } = useAuth();
   const liveCount = GAMES.filter((g) => g.status === "live").length;
 
   return (
