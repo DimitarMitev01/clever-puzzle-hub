@@ -29,7 +29,14 @@ function Leaderboard() {
         .order("score", { ascending: false })
         .limit(50);
       const rows = scores ?? [];
-      const userIds = Array.from(new Set(rows.map((r) => r.user_id)));
+      // Keep only the highest score per user (rows are already sorted desc).
+      const seen = new Set<string>();
+      const unique = rows.filter((r) => {
+        if (seen.has(r.user_id)) return false;
+        seen.add(r.user_id);
+        return true;
+      });
+      const userIds = Array.from(seen);
       const profileMap: Record<string, { display_name: string | null; username: string | null }> = {};
       if (userIds.length) {
         const { data: profiles } = await supabase
@@ -38,7 +45,7 @@ function Leaderboard() {
           .in("id", userIds);
         for (const p of profiles ?? []) profileMap[p.id] = { display_name: p.display_name, username: p.username };
       }
-      return rows
+      return unique
         .filter((r) => profileMap[r.user_id])
         .map((r) => ({ ...r, profiles: profileMap[r.user_id] }))
         .slice(0, 20);
