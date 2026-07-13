@@ -62,6 +62,7 @@ const TIPS = [
 ];
 
 function AboutPage() {
+  const { user } = useAuth();
   return (
     <div className="min-h-screen bg-surface-900 text-slate-100">
       <Header />
