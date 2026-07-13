@@ -273,12 +273,14 @@ function AboutPage() {
             >
               Разгледай игрите
             </Link>
-            <Link
-              to="/auth"
-              className="px-7 py-3 bg-surface-800/80 text-white font-bold rounded-xl border border-white/10 hover:border-brand-primary/50 transition-all"
-            >
-              Създай профил
-            </Link>
+            {!user && (
+              <Link
+                to="/auth"
+                className="px-7 py-3 bg-surface-800/80 text-white font-bold rounded-xl border border-white/10 hover:border-brand-primary/50 transition-all"
+              >
+                Създай профил
+              </Link>
+            )}
           </div>
         </section>
       </main>
