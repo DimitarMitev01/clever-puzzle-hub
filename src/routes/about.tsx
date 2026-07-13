@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { useAuth } from "@/hooks/use-auth";
 import {
   Brain,
   Puzzle,
@@ -61,6 +62,7 @@ const TIPS = [
 ];
 
 function AboutPage() {
+  const { user } = useAuth();
   return (
     <div className="min-h-screen bg-surface-900 text-slate-100">
       <Header />
@@ -271,12 +273,14 @@ function AboutPage() {
             >
               Разгледай игрите
             </Link>
-            <Link
-              to="/auth"
-              className="px-7 py-3 bg-surface-800/80 text-white font-bold rounded-xl border border-white/10 hover:border-brand-primary/50 transition-all"
-            >
-              Създай профил
-            </Link>
+            {!user && (
+              <Link
+                to="/auth"
+                className="px-7 py-3 bg-surface-800/80 text-white font-bold rounded-xl border border-white/10 hover:border-brand-primary/50 transition-all"
+              >
+                Създай профил
+              </Link>
+            )}
           </div>
         </section>
       </main>
